@@ -92,7 +92,7 @@ form.addEventListener("submit", async (ev) => {
     if (!res.ok) throw new Error("HTTP " + res.status);
     if (CONFIG.PIXEL_ID) fbq("track", "Lead");
     form.outerHTML =
-      '<p class="exito">¡Listo! Eres parte de los fundadores.<br>Te avisaremos primero. 🏆</p>';
+      '<p class="exito">¡Listo! Tu lugar está reservado.<br>Te avisaremos antes que nadie. 🏆</p>';
   } catch (e) {
     console.error("GanaYa submit:", e);
     msg.textContent = "Ups, algo falló. Inténtalo de nuevo.";
