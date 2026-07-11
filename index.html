@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GanaYa — No lo compres, GÁNALO</title>
+  <meta name="description" content="Muy pronto en Chile: descuentos en todo lo que haces y concursos exclusivos para miembros. Únete a la lista fundadora.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="GanaYa — No lo compres, GÁNALO">
+  <meta property="og:description" content="Muy pronto en Chile: descuentos en todo lo que haces y concursos exclusivos para miembros. Únete a la lista fundadora.">
+  <meta property="og:image" content="https://gana-ya.com/assets/og.jpg">
+  <meta property="og:url" content="https://gana-ya.com">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+  <header class="hero">
+    <img class="hero-logo" src="assets/logo-blanco.png" alt="GanaYa">
+    <h1>No lo compres, <span class="ya">GÁNALO.</span></h1>
+    <p class="hero-sub">Muy pronto en Chile: el club que te da descuentos en todo lo
+      que haces — y concursos exclusivos con premios increíbles para sus miembros.</p>
+    <button class="cta cta-hero" type="button">Quiero ser fundador</button>
+  </header>
+
+  <section class="descuentos">
+    <h2>Descuentos donde realmente gastas</h2>
+    <p class="lead">Un solo club. Descuentos en viajes, bencina, restaurantes,
+      gimnasios y mucho más.</p>
+    <div class="grid-cats">
+      <article class="cat"><span class="emoji" aria-hidden="true">✈️</span><h3>Viajes</h3><p>escápate por menos</p></article>
+      <article class="cat"><span class="emoji" aria-hidden="true">⛽</span><h3>Bencina</h3><p>ahorra en cada carga</p></article>
+      <article class="cat"><span class="emoji" aria-hidden="true">🍔</span><h3>Restaurantes</h3><p>come rico, paga menos</p></article>
+      <article class="cat"><span class="emoji" aria-hidden="true">💪</span><h3>Gimnasios</h3><p>entrena todo el año</p></article>
+      <article class="cat"><span class="emoji" aria-hidden="true">🛍️</span><h3>Tiendas</h3><p>moda y tecnología</p></article>
+      <article class="cat"><span class="emoji" aria-hidden="true">💇</span><h3>Peluquerías</h3><p>luce bien siempre</p></article>
+      <article class="cat"><span class="emoji" aria-hidden="true">🎬</span><h3>Cine y panoramas</h3><p>sal más, gasta menos</p></article>
+      <article class="cat"><span class="emoji" aria-hidden="true">🛵</span><h3>Delivery</h3><p>tu pedido con descuento</p></article>
+    </div>
+    <p class="transition">Y eso es solo el comienzo…</p>
+  </section>
+
+  <section class="premios">
+    <h2>¿Te imaginas lo que podrías ganar?</h2>
+    <img class="premio-hero" src="assets/premios-todos.webp"
+         alt="Premios referenciales: auto 0 km, smartphone, moto y viajes" loading="lazy">
+    <p>Autos, tecnología, motos, viajes… Los miembros fundadores serán los primeros
+      en conocer nuestro primer gran concurso.</p>
+    <p class="ref">Imágenes referenciales. Los concursos promocionales se anunciarán
+      a los miembros.</p>
+  </section>
+
+  <section class="como">
+    <h2>¿Cómo funciona?</h2>
+    <div class="grid-como">
+      <article><span class="num">1</span><h3>Te haces miembro</h3></article>
+      <article><span class="num">2</span><h3>Disfrutas descuentos todos los días</h3></article>
+      <article><span class="num">3</span><h3>Participas en concursos exclusivos</h3></article>
+    </div>
+  </section>
+
+  <section class="fundador">
+    <img class="trofeo" src="assets/trophy.png" alt="" aria-hidden="true">
+    <h2>Ventaja fundador</h2>
+    <p>Los primeros inscritos tendrán beneficios exclusivos de lanzamiento.</p>
+  </section>
+
+  <section class="registro" id="registro">
+    <h2>Reserva tu lugar</h2>
+    <form id="form-fundador" novalidate>
+      <label for="nombre">Nombre</label>
+      <input id="nombre" name="nombre" type="text" autocomplete="given-name" placeholder="Tu nombre">
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.cl" required>
+      <p class="field-err" id="err-email" hidden>Revisa tu email 🙂</p>
+
+      <label for="whatsapp">WhatsApp</label>
+      <div class="tel">
+        <span class="prefijo">+56</span>
+        <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="9 1234 5678" required>
+      </div>
+      <p class="field-err" id="err-whatsapp" hidden>Revisa tu número (9 dígitos)</p>
+
+      <label class="consent">
+        <input id="consent" name="consent" type="checkbox" required>
+        <span>Acepto recibir novedades de GanaYa por email y WhatsApp.</span>
+      </label>
+      <p class="field-err" id="err-consent" hidden>Necesitamos tu OK para avisarte 😉</p>
+
+      <input id="hp" name="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <button class="cta" type="submit">Reservar mi lugar</button>
+      <p id="form-msg" role="status"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p>GanaYa es un programa de beneficios y membresía promocional. Los concursos son
+      actividades promocionales exclusivas para miembros y no constituyen juegos de
+      azar.</p>
+    <p>© 2026 GanaYa SpA · <a href="mailto:contacto@gana-ya.com">contacto@gana-ya.com</a></p>
+  </footer>
+
+</body>
+</html>

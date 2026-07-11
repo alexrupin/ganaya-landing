@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" role="img" aria-label="Auto de premio">
+  <!-- Silhouette de citadine, style cartoon GanaYa : jaune, contour bleu -->
+  <g stroke="#3E86B8" stroke-width="12" stroke-linejoin="round" stroke-linecap="round">
+    <path fill="#F2C230" d="M60 200
+      Q58 158 92 150
+      L140 140
+      Q190 84 262 78
+      L390 78
+      Q462 84 512 142
+      L566 152
+      Q590 158 588 200
+      L560 208
+      L80 208 Z"/>
+    <!-- vitres -->
+    <path fill="#DCEAF5" d="M186 136 Q222 98 268 94 L300 94 L300 136 Z"/>
+    <path fill="#DCEAF5" d="M324 94 L386 94 Q436 98 472 134 L324 136 Z"/>
+    <!-- roues -->
+    <circle cx="170" cy="208" r="40" fill="#3E86B8"/>
+    <circle cx="170" cy="208" r="18" fill="#DCEAF5"/>
+    <circle cx="470" cy="208" r="40" fill="#3E86B8"/>
+    <circle cx="470" cy="208" r="18" fill="#DCEAF5"/>
+    <!-- phare + sourire calandre -->
+    <circle cx="564" cy="172" r="8" fill="#FBF9F4"/>
+    <path fill="none" d="M520 186 Q544 198 566 188"/>
+  </g>
+</svg>
