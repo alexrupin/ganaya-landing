@@ -21,10 +21,83 @@ if (CONFIG.PIXEL_ID) {
   fbq("track", "PageView");
 }
 
-// ---------- Scroll du CTA hero vers le formulaire ----------
-document.querySelector(".cta-hero").addEventListener("click", () => {
+// ---------- Scroll des CTA vers le formulaire ----------
+function irAlFormulario() {
   document.getElementById("registro").scrollIntoView({ behavior: "smooth" });
   document.getElementById("nombre").focus({ preventScroll: true });
+}
+document.querySelector(".cta-hero").addEventListener("click", irAlFormulario);
+document.querySelector(".cta-sticky").addEventListener("click", irAlFormulario);
+
+// ---------- Sticky CTA : visible après le hero, masqué sur le formulaire ----------
+const sticky = document.getElementById("sticky-cta");
+const hero = document.querySelector(".hero");
+const registro = document.getElementById("registro");
+let heroVisible = true;
+let formVisible = false;
+
+function refreshSticky() {
+  sticky.hidden = heroVisible || formVisible;
+}
+new IntersectionObserver((entries) => {
+  heroVisible = entries[0].isIntersecting;
+  refreshSticky();
+}, { threshold: 0.05 }).observe(hero);
+new IntersectionObserver((entries) => {
+  formVisible = entries[0].isIntersecting;
+  refreshSticky();
+}, { threshold: 0.15 }).observe(registro);
+
+// ---------- Vote premios ----------
+const votoMsg = document.getElementById("voto-msg");
+
+function enviarVoto(payload) {
+  if (!CONFIG.WEBHOOK_URL) return Promise.reject(new Error("no webhook"));
+  return fetch(CONFIG.WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(Object.assign({
+      tipo: "voto",
+      source: new URLSearchParams(location.search).get("utm_source") || "",
+      ua: navigator.userAgent.slice(0, 120),
+    }, payload)),
+  });
+}
+
+document.querySelectorAll(".opcion").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (localStorage.getItem("ganaya_voto")) {
+      votoMsg.textContent = "Ya registramos tu voto. ¡Gracias!";
+      return;
+    }
+    document.querySelectorAll(".opcion").forEach((b) => { b.disabled = true; });
+    btn.classList.add("elegida");
+    enviarVoto({ premio: btn.dataset.premio })
+      .then(() => {
+        localStorage.setItem("ganaya_voto", btn.dataset.premio);
+        votoMsg.textContent = "¡Voto registrado! Regístrate abajo para no perderte el concurso del premio más votado 👇";
+      })
+      .catch(() => {
+        document.querySelectorAll(".opcion").forEach((b) => { b.disabled = false; });
+        btn.classList.remove("elegida");
+        votoMsg.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+        votoMsg.style.color = "#C0392B";
+      });
+  });
+});
+
+document.getElementById("btn-idea").addEventListener("click", () => {
+  const idea = document.getElementById("otra-idea").value.trim();
+  if (!idea) return;
+  enviarVoto({ premio: "(otra idea)", otra_idea: idea })
+    .then(() => {
+      document.getElementById("otra-idea").value = "";
+      votoMsg.textContent = "¡Gracias por tu idea! Nuestro equipo la revisará.";
+    })
+    .catch(() => {
+      votoMsg.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+      votoMsg.style.color = "#C0392B";
+    });
 });
 
 // ---------- Formulaire ----------

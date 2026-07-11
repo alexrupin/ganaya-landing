@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GanaYa — No lo compres, GÁNALO</title>
-  <meta name="description" content="Muy pronto en Chile: descuentos en todo lo que haces y concursos exclusivos para miembros. Sé de los primeros.">
+  <title>GanaYa — Club de beneficios | No lo compres, GÁNALO</title>
+  <meta name="description" content="El club de beneficios que llega a Chile: descuentos reales en restaurantes, gimnasios, viajes, bencina y más — y concursos promocionales exclusivos para miembros. Sé de los primeros.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="GanaYa — No lo compres, GÁNALO">
-  <meta property="og:description" content="Muy pronto en Chile: descuentos en todo lo que haces y concursos exclusivos para miembros. Sé de los primeros.">
+  <meta property="og:description" content="Descuentos reales todos los días y concursos promocionales exclusivos para miembros. Únete gratis a la lista de espera.">
   <meta property="og:image" content="https://gana-ya.com/assets/og.jpg">
   <meta property="og:url" content="https://gana-ya.com">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
@@ -20,18 +20,22 @@
 </head>
 <body>
 
+  <!-- 1. Hero -->
   <header class="hero">
     <img class="hero-logo" src="assets/logo-blanco.png" alt="GanaYa">
     <h1>No lo compres, <span class="ya">GÁNALO.</span></h1>
-    <p class="hero-sub">Muy pronto en Chile: el club que te da descuentos en todo lo
-      que haces — y concursos exclusivos con premios increíbles para sus miembros.</p>
-    <button class="cta cta-hero" type="button">Quiero ser de los primeros</button>
+    <p class="hero-sub">Únete al club de beneficios GanaYa: descuentos reales en
+      restaurantes, gimnasios, viajes, bencina y más. Y solo por ser miembro, accede a
+      concursos promocionales exclusivos con premios como autos, viajes y tecnología.</p>
+    <button class="cta cta-hero" type="button">Quiero mi acceso anticipado</button>
+    <a class="link-secundario" href="#beneficios">Ver beneficios ↓</a>
   </header>
 
-  <section class="descuentos">
-    <h2>Descuentos donde realmente gastas</h2>
-    <p class="lead">Un solo club. Descuentos en viajes, bencina, restaurantes,
-      gimnasios y mucho más.</p>
+  <!-- 2. Descuentos -->
+  <section class="descuentos" id="beneficios">
+    <h2>Descuentos que usas todos los días</h2>
+    <p class="lead">Restaurantes, gimnasios, viajes, bencina, tecnología y más.
+      Tu membresía se paga sola.</p>
     <div class="grid-cats">
       <article class="cat"><span class="emoji" aria-hidden="true">✈️</span><h3>Viajes</h3><p>escápate por menos</p></article>
       <article class="cat"><span class="emoji" aria-hidden="true">⛽</span><h3>Bencina</h3><p>ahorra en cada carga</p></article>
@@ -42,43 +46,128 @@
       <article class="cat"><span class="emoji" aria-hidden="true">🎬</span><h3>Cine y panoramas</h3><p>sal más, gasta menos</p></article>
       <article class="cat"><span class="emoji" aria-hidden="true">🛵</span><h3>Delivery</h3><p>tu pedido con descuento</p></article>
     </div>
-    <p class="transition">Y eso es solo el comienzo…</p>
+    <p class="transition">Estamos sumando comercios en todo Chile — los primeros
+      miembros los conocerán antes que nadie.</p>
   </section>
 
+  <!-- 3. Premios aspiracionales -->
   <section class="premios">
-    <h2>¿Te imaginas lo que podrías ganar?</h2>
+    <h2>Premios que podrás encontrar en GanaYa</h2>
     <img class="premio-hero" src="assets/premios-todos.webp"
          alt="Premios referenciales: camioneta 0 km, smartphone, moto y viajes" loading="lazy">
-    <p>Camionetas, tecnología, motos, viajes… Los primeros inscritos conocerán antes
-      que nadie nuestro primer gran concurso.</p>
-    <p class="ref">Imágenes referenciales. Los concursos promocionales se anunciarán
-      a los miembros.</p>
+    <p>Camionetas, tecnología, motos, viajes… concursos promocionales exclusivos
+      para miembros.</p>
+    <p class="ref">Imágenes referenciales. Cada concurso promocional contará con sus
+      bases legales públicas.</p>
   </section>
 
+  <!-- 4. Cómo funciona -->
   <section class="como">
     <h2>¿Cómo funciona?</h2>
     <div class="grid-como">
-      <article><span class="num">1</span><h3>Te haces miembro</h3></article>
-      <article><span class="num">2</span><h3>Disfrutas descuentos todos los días</h3></article>
-      <article><span class="num">3</span><h3>Participas en concursos exclusivos</h3></article>
+      <article><span class="num">1</span><h3>Regístrate y hazte miembro</h3></article>
+      <article><span class="num">2</span><h3>Disfruta descuentos en cientos de comercios</h3></article>
+      <article><span class="num">3</span><h3>Accede a concursos promocionales exclusivos</h3></article>
+      <article><span class="num">4</span><h3>Podrás ser seleccionado para vivir experiencias increíbles</h3></article>
     </div>
   </section>
 
-  <section class="fundador">
+  <!-- 5. Vote premios -->
+  <section class="voto" id="voto">
     <img class="trofeo" src="assets/trophy.png" alt="" aria-hidden="true">
-    <h2>Beneficios para los primeros</h2>
-    <p>Los primeros inscritos tendrán beneficios exclusivos de lanzamiento.</p>
+    <h2>Tú eliges los próximos premios</h2>
+    <p class="lead">¿Qué premio te gustaría ver en el próximo concurso promocional de
+      GanaYa? Vota:</p>
+    <div class="grid-voto" id="grid-voto">
+      <button class="opcion" data-premio="iPhone última generación">📱 iPhone última generación</button>
+      <button class="opcion" data-premio="PlayStation 5 + setup gamer">🎮 PlayStation 5 + setup</button>
+      <button class="opcion" data-premio="Viaje a Brasil para dos">🏖️ Viaje a Brasil para dos</button>
+      <button class="opcion" data-premio="Moto">🏍️ Moto</button>
+      <button class="opcion" data-premio="Año de bencina">⛽ Un año de bencina</button>
+      <button class="opcion" data-premio="Experiencia gastronómica">🍽️ Experiencia gastronómica</button>
+    </div>
+    <div class="otra-idea" id="otra-idea-box">
+      <label for="otra-idea">¿Otra idea? Cuéntanos (solo la ve nuestro equipo)</label>
+      <div class="fila-idea">
+        <input id="otra-idea" type="text" maxlength="80" placeholder="Tu idea de premio">
+        <button class="cta cta-mini" id="btn-idea" type="button">Enviar</button>
+      </div>
+    </div>
+    <p id="voto-msg" role="status"></p>
+    <p class="ref">Los premios de GanaYa son siempre productos y experiencias.</p>
   </section>
 
+  <!-- 6. Transparencia -->
+  <section class="transparencia">
+    <h2>Transparencia total</h2>
+    <p>GanaYa es un programa de beneficios operado por una sociedad constituida en
+      Chile, con domicilio en Santiago. Cada concurso promocional contará con bases
+      legales públicas que detallan el proceso de selección y la entrega de premios,
+      validado ante ministro de fe.</p>
+    <p>Sin letra chica: pagas por descuentos reales, y los concursos promocionales son
+      un beneficio adicional por ser miembro.</p>
+  </section>
+
+  <!-- 7. FAQ -->
+  <section class="faq">
+    <h2>Preguntas frecuentes</h2>
+    <details>
+      <summary>¿Qué es GanaYa?</summary>
+      <p>Un club de beneficios: una membresía que te da descuentos en comercios de todo
+        Chile — restaurantes, gimnasios, viajes, bencina y más — y, además, acceso a
+        concursos promocionales exclusivos para miembros.</p>
+    </details>
+    <details>
+      <summary>¿Es esto una lotería?</summary>
+      <p>No. GanaYa es un programa de beneficios: pagas por descuentos reales que usas
+        todos los días. Los concursos promocionales son un beneficio adicional para
+        miembros, regidos por bases legales públicas.</p>
+    </details>
+    <details>
+      <summary>¿Cuánto costará la membresía?</summary>
+      <p>Los precios se anunciarán en el lanzamiento. Los primeros inscritos tendrán
+        beneficios exclusivos de fundador.</p>
+    </details>
+    <details>
+      <summary>¿Cómo accedo a los concursos promocionales?</summary>
+      <p>Todos los miembros activos acceden a los concursos promocionales, sin pagos
+        adicionales. Ser miembro es el único requisito.</p>
+    </details>
+    <details>
+      <summary>¿Cómo se selecciona a quien recibe el premio?</summary>
+      <p>Cada concurso promocional tiene bases legales públicas que detallan el proceso
+        de selección, validado ante ministro de fe, y la fecha de anuncio.</p>
+    </details>
+    <details>
+      <summary>¿Cómo recibo mi premio si soy seleccionado?</summary>
+      <p>Te contactamos por los datos de tu cuenta y coordinamos la entrega según las
+        bases legales del concurso. Cada entrega queda documentada.</p>
+    </details>
+    <details>
+      <summary>¿Qué pasa si no respondo dentro del plazo?</summary>
+      <p>Las bases legales de cada concurso definen el plazo de respuesta y el proceso
+        si la persona seleccionada no responde.</p>
+    </details>
+    <details>
+      <summary>¿Podré cancelar mi membresía cuando quiera?</summary>
+      <p>Sí. La membresía se podrá cancelar en cualquier momento, sin ataduras.</p>
+    </details>
+    <details>
+      <summary>¿Quiénes están detrás de GanaYa?</summary>
+      <p>Una sociedad constituida en Chile, con domicilio en Santiago. Puedes
+        escribirnos cuando quieras a
+        <a href="mailto:contacto@gana-ya.com">contacto@gana-ya.com</a> — te responde una
+        persona real.</p>
+    </details>
+  </section>
+
+  <!-- 8. Formulaire -->
   <section class="registro" id="registro">
-    <h2>Reserva tu lugar</h2>
+    <h2>Sé de los primeros</h2>
+    <p class="lead">Los primeros inscritos tendrán beneficios de fundador.</p>
     <form id="form-fundador" novalidate>
       <label for="nombre">Nombre</label>
       <input id="nombre" name="nombre" type="text" autocomplete="given-name" placeholder="Tu nombre">
-
-      <label for="email">Email</label>
-      <input id="email" name="email" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.cl" required>
-      <p class="field-err" id="err-email" hidden>Revisa tu email 🙂</p>
 
       <label for="whatsapp">WhatsApp</label>
       <div class="tel">
@@ -87,9 +176,15 @@
       </div>
       <p class="field-err" id="err-whatsapp" hidden>Revisa tu número (9 dígitos)</p>
 
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.cl" required>
+      <p class="field-err" id="err-email" hidden>Revisa tu email 🙂</p>
+
       <label class="consent">
         <input id="consent" name="consent" type="checkbox" required>
-        <span>Acepto recibir novedades de GanaYa por email y WhatsApp.</span>
+        <span>Acepto recibir comunicaciones de GanaYa por correo y WhatsApp. Puedo
+          darme de baja en cualquier momento.
+          <a href="privacidad.html" target="_blank">Política de Privacidad</a>.</span>
       </label>
       <p class="field-err" id="err-consent" hidden>Necesitamos tu OK para avisarte 😉</p>
 
@@ -97,15 +192,38 @@
 
       <button class="cta" type="submit">Reservar mi lugar</button>
       <p id="form-msg" role="status"></p>
+      <p class="nota-form">Te avisaremos por WhatsApp y correo cuando comience el
+        lanzamiento. Nada de spam. Tus datos están protegidos conforme a la ley chilena
+        de protección de datos personales.</p>
     </form>
   </section>
 
+  <!-- 9. Contacto -->
+  <section class="contacto">
+    <h2>¿Tienes dudas?</h2>
+    <p>Escríbenos y te responde una persona real:
+      <a href="mailto:contacto@gana-ya.com">contacto@gana-ya.com</a></p>
+  </section>
+
+  <!-- 10. Footer -->
   <footer>
-    <p>GanaYa es un programa de beneficios y membresía promocional. Los concursos son
-      actividades promocionales exclusivas para miembros y no constituyen juegos de
-      azar.</p>
-    <p>© 2026 GanaYa SpA · <a href="mailto:contacto@gana-ya.com">contacto@gana-ya.com</a></p>
+    <p>GanaYa es un programa de beneficios y membresía promocional. No es un juego de
+      azar, lotería ni casa de apuestas. Los concursos promocionales son un beneficio
+      exclusivo para miembros y se rigen por sus bases legales, disponibles en este
+      sitio con cada concurso.</p>
+    <nav class="footer-links">
+      <a href="terminos.html">Términos y Condiciones</a> ·
+      <a href="privacidad.html">Política de Privacidad</a> ·
+      <a href="cookies.html">Política de Cookies</a> ·
+      <a href="mailto:contacto@gana-ya.com">Contacto</a>
+    </nav>
+    <p>© 2026 GanaYa · Santiago de Chile · <a href="mailto:contacto@gana-ya.com">contacto@gana-ya.com</a></p>
   </footer>
+
+  <!-- 0. Sticky CTA -->
+  <div class="sticky-cta" id="sticky-cta" hidden>
+    <button class="cta cta-sticky" type="button">Únete gratis</button>
+  </div>
 
 </body>
 </html>
