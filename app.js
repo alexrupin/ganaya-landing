@@ -3,7 +3,7 @@
 // (voir GUIDE-GOOGLE-SHEET.md et GUIDE-DEPLOIEMENT.md)
 // ============================================================
 const CONFIG = {
-  WEBHOOK_URL: "",   // URL /exec du Google Apps Script (voir GUIDE-GOOGLE-SHEET.md)
+  WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbw5A2Q9Q-ErMxAg7B-0aeqeRat_uGgXQkLNxZSRQQPJkv3dSA1fAtoxKQNgXKN3MrMI/exec",
   PIXEL_ID: "",      // Pixel Meta (vide = désactivé)
 };
 
