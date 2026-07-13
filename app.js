@@ -59,25 +59,25 @@ function confettiDesde(el) {
   lanzarConfetti(r.left + r.width / 2, Math.max(r.top, 80) + Math.min(r.height / 2, 60));
 }
 
-// ---------- Jauge lugares de pre-lanzamiento ----------
-// Honnête par défaut : « 2.500 lugares », barre en attente (reflet doré, pas de
+// ---------- Jauge cupos de pre-lanzamiento ----------
+// Honnête par défaut : « 2.500 cupos », barre en attente (reflet doré, pas de
 // faux remplissage). Si le script Google expose un jour le compteur réel
 // (GET ?count=1 → {"count": N}), on affiche « N / 2.500 » et on remplit.
-const LUGARES_TOTAL = 2500;
+const CUPOS_TOTAL = 2500;
 (function jaugeReal() {
   if (!CONFIG.WEBHOOK_URL) return;
   fetch(CONFIG.WEBHOOK_URL + "?count=1")
     .then((r) => r.json())
     .then((d) => {
       if (!d || typeof d.count !== "number" || d.count <= 0) return;
-      const n = Math.min(d.count, LUGARES_TOTAL);
+      const n = Math.min(d.count, CUPOS_TOTAL);
       document.getElementById("jauge-num").textContent =
-        `${n.toLocaleString("es-CL")} / ${LUGARES_TOTAL.toLocaleString("es-CL")}`;
+        `${n.toLocaleString("es-CL")} / ${CUPOS_TOTAL.toLocaleString("es-CL")}`;
       document.getElementById("jauge-estado").textContent =
         "Los primeros inscritos tendrán beneficios exclusivos";
       const fill = document.getElementById("jauge-fill");
       requestAnimationFrame(() => {
-        fill.style.width = `${Math.max((n / LUGARES_TOTAL) * 100, 2)}%`;
+        fill.style.width = `${Math.max((n / CUPOS_TOTAL) * 100, 2)}%`;
       });
     })
     .catch(() => { /* compteur pas encore exposé : on garde l'affichage neutre */ });
