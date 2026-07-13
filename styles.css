@@ -156,7 +156,7 @@ body.noche h2 { color: var(--noche-texto); }
   .flotante-der { right: 4%; top: 18%; width: 170px; animation: flotaDer 8s ease-in-out 1s infinite; }
 }
 
-/* ---------- Jauge cupos fundadores ---------- */
+/* ---------- Jauge lugares de pre-lanzamiento ---------- */
 .jauge { width: min(420px, 86vw); display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
 .jauge-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.8rem; }
 .jauge-label { font-weight: 700; color: var(--bleu-pale); display: flex; align-items: center; gap: 7px; }
@@ -485,16 +485,16 @@ body.noche h2 { color: var(--noche-texto); }
 }
 .registro-card .lead { margin: 8px 0 0; color: #5b6b76; font-size: 0.95rem; text-align: center; }
 
-#form-fundador { display: flex; flex-direction: column; gap: 6px; margin-top: 20px; text-align: left; }
-#form-fundador label { font-weight: 700; font-size: 0.82rem; color: var(--bleu-fonce); margin-top: 10px; }
-#form-fundador input[type="text"],
-#form-fundador input[type="email"],
-#form-fundador input[type="tel"] {
+#form-registro { display: flex; flex-direction: column; gap: 6px; margin-top: 20px; text-align: left; }
+#form-registro label { font-weight: 700; font-size: 0.82rem; color: var(--bleu-fonce); margin-top: 10px; }
+#form-registro input[type="text"],
+#form-registro input[type="email"],
+#form-registro input[type="tel"] {
   height: 48px; border: 2px solid #d5dee5; border-radius: 12px;
   padding: 0 12px; font-family: inherit; font-size: 0.95rem; width: 100%;
   background: #fff; color: var(--encre);
 }
-#form-fundador input:focus-visible {
+#form-registro input:focus-visible {
   outline: none; border-color: var(--jaune);
   box-shadow: 0 0 0 3px rgba(242, 194, 48, 0.25);
 }
@@ -513,7 +513,7 @@ body.noche h2 { color: var(--noche-texto); }
 
 #hp { position: absolute; left: -9999px; height: 1px; width: 1px; opacity: 0; }
 
-#form-fundador .cta {
+#form-registro .cta {
   margin-top: 16px; width: 100%;
   box-shadow: 0 8px 24px rgba(217, 168, 27, 0.4);
 }
