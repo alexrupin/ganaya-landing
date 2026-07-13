@@ -14,26 +14,42 @@
   <link rel="apple-touch-icon" href="assets/favicon-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
-<body>
+<body class="noche">
 
   <!-- 1. Hero -->
-  <header class="hero">
-    <img class="hero-logo" src="assets/logo-blanco.png" alt="GanaYa">
-    <h1>No lo compres, <span class="ya">GÁNALO.</span></h1>
-    <p class="hero-sub">Únete al club de beneficios GanaYa: descuentos reales en
-      restaurantes, gimnasios, viajes, bencina y más. Y solo por ser miembro, accede a
-      concursos promocionales exclusivos con premios como autos, viajes y tecnología.</p>
-    <button class="cta cta-hero" type="button">Quiero mi acceso anticipado</button>
-    <a class="link-secundario" href="#beneficios">Ver beneficios ↓</a>
+  <header class="hero" id="hero">
+    <img class="flotante flotante-izq" src="assets/brand/premio-phone.png" alt="" aria-hidden="true" loading="lazy">
+    <img class="flotante flotante-der" src="assets/brand/premio-viaje.png" alt="" aria-hidden="true" loading="lazy">
+    <div class="hero-inner">
+      <img class="hero-logo" src="assets/logo-blanco.png" alt="GanaYa">
+      <h1>No lo compres,<br><span class="ya">GÁNALO.</span></h1>
+      <p class="hero-sub">Únete al club de beneficios GanaYa: descuentos reales en
+        restaurantes, gimnasios, viajes, bencina y más. Y solo por ser miembro, accede a
+        concursos promocionales exclusivos con premios como autos, viajes y tecnología.</p>
+      <div class="hero-premio">
+        <span class="hero-premio-glow" aria-hidden="true"></span>
+        <img src="assets/brand/premio-auto.png" alt="" aria-hidden="true">
+      </div>
+      <button class="cta cta-hero cta-shine" type="button">Quiero mi acceso anticipado</button>
+      <div class="jauge">
+        <div class="jauge-top">
+          <span class="jauge-label"><span class="jauge-dot" aria-hidden="true"></span>Cupos fundadores</span>
+          <span class="jauge-num" id="jauge-num">2.500 cupos</span>
+        </div>
+        <div class="jauge-track"><div class="jauge-fill" id="jauge-fill"></div></div>
+        <p class="jauge-estado" id="jauge-estado">Inscripciones abiertas — los primeros tendrán beneficios exclusivos</p>
+      </div>
+      <a class="link-secundario" href="#beneficios">Ver beneficios ↓</a>
+    </div>
   </header>
 
   <!-- 2. Descuentos -->
   <section data-reveal class="descuentos" id="beneficios">
-    <h2>Descuentos que usas todos los días</h2>
+    <h2>Descuentos que usas <span class="oro">todos los días</span></h2>
     <p class="lead">Restaurantes, gimnasios, viajes, bencina, tecnología y más.
       Tu membresía se paga sola.</p>
     <div class="grid-cats">
@@ -52,9 +68,14 @@
 
   <!-- 3. Premios aspiracionales -->
   <section data-reveal class="premios">
-    <h2>Premios que podrás encontrar en GanaYa</h2>
-    <img class="premio-hero" src="assets/premios-todos.webp"
-         alt="Premios referenciales: camioneta 0 km, smartphone, moto y viajes" loading="lazy">
+    <h2>Premios que podrás encontrar en <span class="oro">GanaYa</span></h2>
+    <div class="premios-escena" role="img" aria-label="Premios referenciales: camioneta 0 km, smartphone, moto y viajes">
+      <span class="premios-glow" aria-hidden="true"></span>
+      <img class="escena-phone" src="assets/brand/premio-phone.png" alt="">
+      <img class="escena-viaje" src="assets/brand/premio-viaje.png" alt="">
+      <img class="escena-auto" src="assets/brand/premio-auto.png" alt="">
+      <img class="escena-moto" src="assets/brand/premio-moto.png" alt="">
+    </div>
     <p>Camionetas, tecnología, motos, viajes… concursos promocionales exclusivos
       para miembros.</p>
     <p class="ref">Imágenes referenciales. Cada concurso promocional contará con sus
@@ -74,17 +95,16 @@
 
   <!-- 5. Vote premios -->
   <section data-reveal class="voto" id="voto">
-    <img class="trofeo" src="assets/trophy.png" alt="" aria-hidden="true">
-    <h2>Tú eliges los próximos premios</h2>
+    <h2>Tú eliges los <span class="ya">próximos premios</span></h2>
     <p class="lead">¿Qué premio te gustaría ver en el próximo concurso promocional de
       GanaYa? Vota:</p>
     <div class="grid-voto" id="grid-voto">
-      <button class="opcion" data-premio="iPhone última generación"><img class="opcion-img" src="assets/brand/premio-phone.png" alt="" loading="lazy">iPhone última generación</button>
-      <button class="opcion" data-premio="Auto 0 km"><img class="opcion-img" src="assets/brand/premio-auto.png" alt="" loading="lazy">Auto 0 km</button>
-      <button class="opcion" data-premio="Viaje para dos"><img class="opcion-img" src="assets/brand/premio-viaje.png" alt="" loading="lazy">Viaje para dos</button>
-      <button class="opcion" data-premio="Moto"><img class="opcion-img" src="assets/brand/premio-moto.png" alt="" loading="lazy">Moto</button>
-      <button class="opcion" data-premio="Año de bencina"><img class="opcion-img" src="assets/brand/premio-bencina.png" alt="" loading="lazy">Un año de bencina</button>
-      <button class="opcion" data-premio="Experiencia gastronómica"><img class="opcion-img" src="assets/brand/premio-gastronomia.png" alt="" loading="lazy">Experiencia gastronómica</button>
+      <button class="opcion" data-premio="iPhone última generación"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-phone.png" alt="" loading="lazy"><span class="opcion-label">iPhone última generación</span></button>
+      <button class="opcion" data-premio="Auto 0 km"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-auto.png" alt="" loading="lazy"><span class="opcion-label">Auto 0 km</span></button>
+      <button class="opcion" data-premio="Viaje para dos"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-viaje.png" alt="" loading="lazy"><span class="opcion-label">Viaje para dos</span></button>
+      <button class="opcion" data-premio="Moto"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-moto.png" alt="" loading="lazy"><span class="opcion-label">Moto</span></button>
+      <button class="opcion" data-premio="Año de bencina"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-bencina.png" alt="" loading="lazy"><span class="opcion-label">Un año de bencina</span></button>
+      <button class="opcion" data-premio="Experiencia gastronómica"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-gastronomia.png" alt="" loading="lazy"><span class="opcion-label">Experiencia gastronómica</span></button>
     </div>
     <div class="otra-idea" id="otra-idea-box">
       <label for="otra-idea">¿Otra idea? Cuéntanos (solo la ve nuestro equipo)</label>
@@ -99,13 +119,15 @@
 
   <!-- 6. Transparencia -->
   <section data-reveal class="transparencia">
-    <h2>Transparencia total</h2>
-    <p>GanaYa es un programa de beneficios operado por una sociedad constituida en
-      Chile, con domicilio en Santiago. Cada concurso promocional contará con bases
-      legales públicas que detallan el proceso de selección y la entrega de premios,
-      validado ante ministro de fe.</p>
-    <p>Sin letra chica: pagas por descuentos reales, y los concursos promocionales son
-      un beneficio adicional por ser miembro.</p>
+    <div class="transparencia-card">
+      <h2>Transparencia <span class="oro">total</span></h2>
+      <p>GanaYa es un programa de beneficios operado por una sociedad constituida en
+        Chile, con domicilio en Santiago. Cada concurso promocional contará con bases
+        legales públicas que detallan el proceso de selección y la entrega de premios,
+        validado ante ministro de fe.</p>
+      <p>Sin letra chica: pagas por descuentos reales, y los concursos promocionales son
+        un beneficio adicional por ser miembro.</p>
+    </div>
   </section>
 
   <!-- 7. FAQ -->
@@ -162,39 +184,41 @@
 
   <!-- 8. Formulaire -->
   <section data-reveal class="registro" id="registro">
-    <h2>Sé de los primeros</h2>
-    <p class="lead">Los primeros inscritos tendrán beneficios exclusivos.</p>
-    <form id="form-fundador" novalidate>
-      <label for="nombre">Nombre</label>
-      <input id="nombre" name="nombre" type="text" autocomplete="given-name" placeholder="Tu nombre">
+    <div class="registro-card" id="registro-card">
+      <h2>Sé de los <span class="dorado">primeros</span></h2>
+      <p class="lead">Los primeros inscritos tendrán beneficios exclusivos.</p>
+      <form id="form-fundador" novalidate>
+        <label for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" type="text" autocomplete="given-name" placeholder="Tu nombre">
 
-      <label for="whatsapp">WhatsApp</label>
-      <div class="tel">
-        <select id="cc" class="prefijo-select" aria-label="Código de país"></select>
-        <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="9 1234 5678" required>
-      </div>
-      <p class="field-err" id="err-whatsapp" hidden>Revisa tu número (solo dígitos, sin el código de país)</p>
+        <label for="whatsapp">WhatsApp</label>
+        <div class="tel">
+          <select id="cc" class="prefijo-select" aria-label="Código de país"></select>
+          <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="9 1234 5678" required>
+        </div>
+        <p class="field-err" id="err-whatsapp" hidden>Revisa tu número (solo dígitos, sin el código de país)</p>
 
-      <label for="email">Email</label>
-      <input id="email" name="email" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.cl" required>
-      <p class="field-err" id="err-email" hidden>Revisa tu email</p>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.cl" required>
+        <p class="field-err" id="err-email" hidden>Revisa tu email</p>
 
-      <label class="consent">
-        <input id="consent" name="consent" type="checkbox" required>
-        <span>Acepto recibir comunicaciones de GanaYa por correo y WhatsApp. Puedo
-          darme de baja en cualquier momento.
-          <a href="privacidad.html" target="_blank">Política de Privacidad</a>.</span>
-      </label>
-      <p class="field-err" id="err-consent" hidden>Necesitamos tu OK para avisarte</p>
+        <label class="consent">
+          <input id="consent" name="consent" type="checkbox" required>
+          <span>Acepto recibir comunicaciones de GanaYa por correo y WhatsApp. Puedo
+            darme de baja en cualquier momento.
+            <a href="privacidad.html" target="_blank">Política de Privacidad</a>.</span>
+        </label>
+        <p class="field-err" id="err-consent" hidden>Necesitamos tu OK para avisarte</p>
 
-      <input id="hp" name="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input id="hp" name="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-      <button class="cta" type="submit">Reservar mi lugar</button>
-      <p id="form-msg" role="status"></p>
-      <p class="nota-form">Te avisaremos por WhatsApp y correo cuando comience el
-        lanzamiento. Nada de spam. Tus datos están protegidos conforme a la ley chilena
-        de protección de datos personales.</p>
-    </form>
+        <button class="cta cta-shine" type="submit">Reservar mi lugar</button>
+        <p id="form-msg" role="status"></p>
+        <p class="nota-form">Te avisaremos por WhatsApp y correo cuando comience el
+          lanzamiento. Nada de spam. Tus datos están protegidos conforme a la ley chilena
+          de protección de datos personales.</p>
+      </form>
+    </div>
   </section>
 
   <!-- 9. Contacto -->
@@ -223,6 +247,8 @@
   <div class="sticky-cta" id="sticky-cta" hidden>
     <button class="cta cta-sticky" type="button">Únete gratis</button>
   </div>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
 
 </body>
 </html>

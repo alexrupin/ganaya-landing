@@ -11,6 +11,78 @@ const CONFIG = {
 // sous html.js, pour ne jamais laisser la page vide sans JavaScript.
 document.documentElement.classList.add("js");
 
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ---------- Confetti (canvas maison, ~1 Ko) ----------
+function lanzarConfetti(x, y) {
+  if (REDUCED) return;
+  const c = document.getElementById("confetti");
+  if (!c) return;
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  const ctx = c.getContext("2d");
+  const colores = ["#F2C230", "#f6cf52", "#FBF9F4", "#D9A81B", "#3E86B8"];
+  const parts = Array.from({ length: 160 }, () => ({
+    x, y,
+    vx: (Math.random() - 0.5) * 13,
+    vy: -Math.random() * 13 - 4,
+    s: 4 + Math.random() * 5,
+    r: Math.random() * Math.PI,
+    vr: (Math.random() - 0.5) * 0.3,
+    col: colores[(Math.random() * colores.length) | 0],
+    life: 1,
+  }));
+  const paso = () => {
+    ctx.clearRect(0, 0, c.width, c.height);
+    let vivos = false;
+    parts.forEach((p) => {
+      p.vy += 0.28; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life -= 0.008;
+      if (p.life > 0 && p.y < c.height + 20) {
+        vivos = true;
+        ctx.save();
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.r);
+        ctx.fillStyle = p.col;
+        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.62);
+        ctx.restore();
+      }
+    });
+    if (vivos) requestAnimationFrame(paso);
+    else ctx.clearRect(0, 0, c.width, c.height);
+  };
+  requestAnimationFrame(paso);
+}
+
+function confettiDesde(el) {
+  const r = el.getBoundingClientRect();
+  lanzarConfetti(r.left + r.width / 2, Math.max(r.top, 80) + Math.min(r.height / 2, 60));
+}
+
+// ---------- Jauge cupos fundadores ----------
+// Honnête par défaut : « 2.500 cupos », barre en attente (reflet doré, pas de
+// faux remplissage). Si le script Google expose un jour le compteur réel
+// (GET ?count=1 → {"count": N}), on affiche « N / 2.500 » et on remplit.
+const CUPOS_TOTAL = 2500;
+(function jaugeReal() {
+  if (!CONFIG.WEBHOOK_URL) return;
+  fetch(CONFIG.WEBHOOK_URL + "?count=1")
+    .then((r) => r.json())
+    .then((d) => {
+      if (!d || typeof d.count !== "number" || d.count <= 0) return;
+      const n = Math.min(d.count, CUPOS_TOTAL);
+      document.getElementById("jauge-num").textContent =
+        `${n.toLocaleString("es-CL")} / ${CUPOS_TOTAL.toLocaleString("es-CL")}`;
+      document.getElementById("jauge-estado").textContent =
+        "Los primeros inscritos tendrán beneficios exclusivos";
+      const fill = document.getElementById("jauge-fill");
+      requestAnimationFrame(() => {
+        fill.style.width = `${Math.max((n / CUPOS_TOTAL) * 100, 2)}%`;
+      });
+    })
+    .catch(() => { /* compteur pas encore exposé : on garde l'affichage neutre */ });
+})();
+
 // ---------- Pixel Meta ----------
 if (CONFIG.PIXEL_ID) {
   !function (f, b, e, v, n, t, s) {
@@ -122,6 +194,7 @@ document.querySelectorAll(".opcion").forEach((btn) => {
     enviarVoto({ premio: btn.dataset.premio })
       .then(() => {
         localStorage.setItem("ganaya_voto", btn.dataset.premio);
+        confettiDesde(btn);
         votoMsg.textContent = "¡Voto registrado! Regístrate abajo para no perderte el concurso del premio más votado.";
       })
       .catch(() => {
@@ -130,6 +203,23 @@ document.querySelectorAll(".opcion").forEach((btn) => {
         votoMsg.textContent = "Ups, algo falló. Inténtalo de nuevo.";
         votoMsg.style.color = "#C0392B";
       });
+  });
+});
+
+// ---------- Tilt 3D sur les cartes de vote (desktop, souris) ----------
+document.querySelectorAll(".opcion").forEach((btn) => {
+  btn.addEventListener("pointermove", (e) => {
+    if (REDUCED || e.pointerType !== "mouse" || btn.disabled) return;
+    const r = btn.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    btn.style.transform =
+      `translateY(-5px) perspective(700px) rotateX(${-py * 8}deg) rotateY(${px * 8}deg)`;
+    btn.style.boxShadow = "0 18px 40px rgba(0,0,0,0.45)";
+  });
+  btn.addEventListener("pointerleave", () => {
+    btn.style.transform = "";
+    btn.style.boxShadow = "";
   });
 });
 
@@ -213,8 +303,10 @@ form.addEventListener("submit", async (ev) => {
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
     if (CONFIG.PIXEL_ID) fbq("track", "Lead");
+    confettiDesde(document.getElementById("registro-card"));
     form.outerHTML =
-      '<p class="exito">¡Listo! Tu lugar está reservado.<br>Te avisaremos antes que nadie.</p>';
+      '<div class="exito"><span class="exito-check" aria-hidden="true">✓</span>' +
+      '<p>¡Listo! Tu lugar está reservado.<br>Te avisaremos antes que nadie.</p></div>';
   } catch (e) {
     console.error("GanaYa submit:", e);
     msg.textContent = "Ups, algo falló. Inténtalo de nuevo.";
