@@ -4,7 +4,7 @@
 // ============================================================
 const CONFIG = {
   WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbw5A2Q9Q-ErMxAg7B-0aeqeRat_uGgXQkLNxZSRQQPJkv3dSA1fAtoxKQNgXKN3MrMI/exec",
-  PIXEL_ID: "",      // Pixel Meta (vide = désactivé)
+  PIXEL_ID: "1592168032329875", // Pixel Meta « GanaYa Pixel » (dataset Gana-Ya SpA)
 };
 
 // Marque que le JS est chargé : le CSS ne cache les sections à révéler que
