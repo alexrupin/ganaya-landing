@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>¿De qué comuna eres? · GanaYa</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/assets/favicon.png">
+  <style>
+    /* Page à un seul geste, ouverte depuis le mail. 100 % autonome : la feuille de la
+       landing impose sa mise en page et décentrait la carte, donc on n'en dépend pas. */
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, 'Avenir Next', 'Helvetica Neue', Arial, sans-serif; }
+    html, body.comuna-page { margin: 0; padding: 0; width: 100%; }
+    body.comuna-page { min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px; box-sizing: border-box; background: radial-gradient(ellipse 130% 100% at 50% -20%, #1E4763 0%, #13243B 55%, #0B1830 100%); }
+    .comuna-card { width: 100%; max-width: 430px; margin: 0 auto; background: #FBF9F4; border-radius: 22px;
+      padding: 30px 26px; text-align: center; box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+    .comuna-card img { width: 150px; margin: 0 auto 14px; display: block; }
+    .comuna-card h1 { font-size: 1.35rem; color: #13243B; margin: 0 0 6px; }
+    .comuna-card p { color: #5b6b76; font-size: .95rem; margin: 0 0 16px; }
+    .comuna-card select { width: 100%; padding: 13px 14px; border-radius: 12px; font-size: 1rem;
+      border: 1.5px solid rgba(11,24,48,.25); background: #fff; color: #0B1830; }
+    .comuna-card .gracias { font-weight: 800; color: #13243B; font-size: 1.1rem; margin: 8px 0 4px; }
+    .comuna-card a.ig { color: #2C6690; font-weight: 700; text-decoration: none; }
+  </style>
+</head>
+<body class="comuna-page">
+  <div class="comuna-card" id="card">
+    <img src="/assets/logo.png" alt="GanaYa">
+    <h1>¿De qué comuna eres?</h1>
+    <p>Partimos sumando comercios donde están los inscritos. Un clic y listo.</p>
+    <select id="sel" aria-label="Tu comuna">
+      <option value="" selected disabled>Elige tu comuna</option>
+    </select>
+  </div>
+  <script>
+    const WEBHOOK = "https://script.google.com/macros/s/AKfycbw5A2Q9Q-ErMxAg7B-0aeqeRat_uGgXQkLNxZSRQQPJkv3dSA1fAtoxKQNgXKN3MrMI/exec";
+    const COMUNAS = ["Buin","Cerro Navia","Colina","Conchalí","El Bosque","Estación Central",
+      "Huechuraba","Independencia","La Cisterna","La Florida","La Granja","La Pintana","La Reina",
+      "Lampa","Las Condes","Lo Espejo","Lo Prado","Macul","Maipú","Melipilla","Ñuñoa",
+      "Padre Hurtado","Peñalolén","Providencia","Pudahuel","Puente Alto","Quilicura",
+      "Quinta Normal","Recoleta","Renca","San Bernardo","San Joaquín","San Miguel",
+      "Santiago Centro","Vitacura"];
+    const sel = document.getElementById("sel");
+    COMUNAS.forEach((c) => { const o = document.createElement("option"); o.value = o.textContent = c; sel.appendChild(o); });
+    ["Otra comuna de Santiago", "Fuera de Santiago (regiones)"].forEach((c) => {
+      const o = document.createElement("option"); o.value = o.textContent = c; sel.appendChild(o);
+    });
+    const email = new URLSearchParams(location.search).get("e") || "";
+    sel.addEventListener("change", () => {
+      if (!sel.value) return;
+      fetch(WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ tipo: "comuna", email, comuna: sel.value }),
+      }).catch(() => {});
+      document.getElementById("card").innerHTML =
+        '<img src="/assets/logo.png" alt="GanaYa">' +
+        '<p class="gracias">¡Gracias! Eso nos ayuda harto.</p>' +
+        '<p>Vamos a partir por las comunas con más inscritos.</p>' +
+        '<p><a class="ig" href="https://instagram.com/ganayalatam">Síguenos en Instagram → @ganayalatam</a></p>';
+    });
+  </script>
+</body>
+</html>

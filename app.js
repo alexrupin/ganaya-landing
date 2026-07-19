@@ -1,5 +1,5 @@
 // ============================================================
-// CONFIG — les 2 seules valeurs à remplir avant la mise en ligne
+// CONFIG : les 2 seules valeurs à remplir avant la mise en ligne
 // (voir GUIDE-GOOGLE-SHEET.md et GUIDE-DEPLOIEMENT.md)
 // ============================================================
 const CONFIG = {
@@ -249,6 +249,46 @@ function utm(name) {
   return new URLSearchParams(location.search).get(name) || "";
 }
 
+// ---------- Pregunta comuna (post-inscription : zéro friction avant le Lead) ----------
+// La question n'apparaît qu'APRÈS l'inscription réussie : celui qui l'ignore est
+// déjà compté. La réponse part en tipo:"comuna" vers le même webhook, qui la range
+// dans la colonne comuna de la ligne correspondante (voir GUIDE-GOOGLE-SHEET.md).
+const COMUNAS = [
+  "Maipú", "Puente Alto", "Santiago Centro", "La Florida", "San Bernardo", "Ñuñoa", "Las Condes", "Providencia", "Peñalolén", "La Pintana",
+  "Pudahuel", "Quilicura", "El Bosque", "Renca", "Estación Central", "Recoleta",
+  "Independencia", "Macul", "Cerro Navia", "Lo Espejo", "San Miguel", "La Granja",
+  "Conchalí", "Huechuraba", "Lo Prado", "San Joaquín", "La Cisterna", "Vitacura",
+  "La Reina", "Quinta Normal", "Melipilla", "Colina", "Buin", "Lampa", "Padre Hurtado",
+];
+function montarComunaHTML() {
+  const ops = [...new Set(COMUNAS)].sort((a, b) => a.localeCompare(b, "es"))
+    .map((c) => `<option value="${c}">${c}</option>`).join("");
+  return (
+    '<div class="comuna-box" id="comuna-box">' +
+    '<p class="comuna-q">Una última cosa: ¿de qué comuna eres?</p>' +
+    '<p class="comuna-sub">Partimos sumando comercios donde están los inscritos.</p>' +
+    '<select id="comuna-sel" aria-label="Tu comuna">' +
+    '<option value="" selected disabled>Elige tu comuna</option>' + ops +
+    '<option value="Otra comuna de Santiago">Otra comuna de Santiago</option>' +
+    '<option value="Fuera de Santiago">Fuera de Santiago (regiones)</option>' +
+    "</select></div>"
+  );
+}
+function activarComuna(email) {
+  const sel = document.getElementById("comuna-sel");
+  if (!sel) return;
+  sel.addEventListener("change", () => {
+    const box = document.getElementById("comuna-box");
+    if (!sel.value || !CONFIG.WEBHOOK_URL) return;
+    fetch(CONFIG.WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ tipo: "comuna", email, comuna: sel.value }),
+    }).catch(() => { /* meilleure chance au prochain passage, on ne bloque pas le merci */ });
+    box.innerHTML = '<p class="comuna-gracias">¡Gracias! Eso nos ayuda harto.</p>';
+  });
+}
+
 form.addEventListener("submit", async (ev) => {
   ev.preventDefault();
   msg.textContent = "";
@@ -306,7 +346,9 @@ form.addEventListener("submit", async (ev) => {
     confettiDesde(document.getElementById("registro-card"));
     form.outerHTML =
       '<div class="exito"><span class="exito-check" aria-hidden="true">✓</span>' +
-      '<p>¡Listo! Tu lugar está reservado.<br>Te avisaremos antes que nadie.</p></div>';
+      '<p>¡Listo! Tu lugar está reservado.<br>Te avisaremos antes que nadie.</p>' +
+      montarComunaHTML() + "</div>";
+    activarComuna(email);
   } catch (e) {
     console.error("GanaYa submit:", e);
     msg.textContent = "Ups, algo falló. Inténtalo de nuevo.";

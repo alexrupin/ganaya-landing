@@ -626,3 +626,11 @@ body.noche h2 { color: var(--noche-texto); }
     animation: none !important;
   }
 }
+
+/* ---------- Pregunta comuna (écran post-inscription) ---------- */
+.comuna-box { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(220,234,245,.25); }
+.comuna-q { font-weight: 800; margin: 0 0 2px; }
+.comuna-sub { font-size: .85rem; opacity: .75; margin: 0 0 10px; }
+#comuna-sel { width: 100%; padding: 12px 14px; border-radius: 12px; font-size: 1rem;
+  border: 1.5px solid rgba(11,24,48,.25); background: #fff; color: #0B1830; }
+.comuna-gracias { font-weight: 800; margin: 6px 0 0; }
