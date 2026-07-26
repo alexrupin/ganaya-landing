@@ -11,6 +11,11 @@ const CONFIG = {
 // sous html.js, pour ne jamais laisser la page vide sans JavaScript.
 document.documentElement.classList.add("js");
 
+// Anti-bot : heure de chargement de la page. Le webhook rejette une inscription
+// envoyée moins de 2 s après le chargement (un humain ne remplit pas 3 champs
+// en 2 s). Les vieux clients en cache qui n'envoient pas elapsed_ms passent.
+const T0 = Date.now();
+
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // ---------- Confetti (canvas maison, ~1 Ko) ----------
@@ -329,6 +334,7 @@ form.addEventListener("submit", async (ev) => {
     source: utm("utm_source"),
     campaign: utm("utm_campaign"),
     ua: navigator.userAgent.slice(0, 120),
+    elapsed_ms: Date.now() - T0,
   };
 
   const btn = form.querySelector('button[type="submit"]');
