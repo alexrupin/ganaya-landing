@@ -277,21 +277,52 @@ function montarComunaHTML() {
     '<option value="" selected disabled>Elige tu comuna</option>' + ops +
     '<option value="Otra comuna de Santiago">Otra comuna de Santiago</option>' +
     '<option value="Fuera de Santiago">Fuera de Santiago (regiones)</option>' +
-    "</select></div>"
+    "</select>" +
+    // Champ libre : n'apparaît que sur une option vague. Sans lui, un socio de région
+    // ne pouvait répondre que « Fuera de Santiago », inexploitable pour la prospection.
+    '<div class="comuna-extra" id="comuna-extra" hidden>' +
+    '<input id="comuna-libre" type="text" maxlength="60" autocomplete="address-level2" ' +
+    'placeholder="¿En qué ciudad o comuna?" aria-label="Tu ciudad o comuna">' +
+    '<button id="comuna-ok" type="button">Listo</button>' +
+    "</div></div>"
   );
 }
+// Les deux seules options qui ne disent pas où la personne vit vraiment.
+const COMUNAS_VAGAS = ["Otra comuna de Santiago", "Fuera de Santiago"];
 function activarComuna(email) {
   const sel = document.getElementById("comuna-sel");
   if (!sel) return;
-  sel.addEventListener("change", () => {
+  const extra = document.getElementById("comuna-extra");
+  const libre = document.getElementById("comuna-libre");
+  const ok = document.getElementById("comuna-ok");
+
+  function enviarComuna(comuna) {
     const box = document.getElementById("comuna-box");
-    if (!sel.value || !CONFIG.WEBHOOK_URL) return;
+    if (!CONFIG.WEBHOOK_URL) return;
     fetch(CONFIG.WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ tipo: "comuna", email, comuna: sel.value }),
+      body: JSON.stringify({ tipo: "comuna", email, comuna }),
     }).catch(() => { /* meilleure chance au prochain passage, on ne bloque pas le merci */ });
     box.innerHTML = '<p class="comuna-gracias">¡Gracias! Eso nos ayuda harto.</p>';
+  }
+
+  sel.addEventListener("change", () => {
+    if (!sel.value) return;
+    // Comuna précise : un clic et c'est fini, comme avant.
+    if (COMUNAS_VAGAS.indexOf(sel.value) === -1) { enviarComuna(sel.value); return; }
+    // Option vague : on demande la ville exacte, sans bloquer.
+    extra.hidden = false;
+    libre.focus();
+  });
+
+  ok.addEventListener("click", () => {
+    // Si la personne ne précise rien, on garde quand même sa réponse d'origine.
+    const txt = libre.value.trim();
+    enviarComuna(txt ? txt : sel.value);
+  });
+  libre.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); ok.click(); }
   });
 }
 
