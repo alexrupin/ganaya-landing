@@ -23,6 +23,15 @@
       border: 1.5px solid rgba(11,24,48,.25); background: #fff; color: #0B1830; }
     .comuna-card .gracias { font-weight: 800; color: #13243B; font-size: 1.1rem; margin: 8px 0 4px; }
     .comuna-card a.ig { color: #2C6690; font-weight: 700; text-decoration: none; }
+    /* Champ libre : n'apparaît que si la personne choisit une option vague. Sans lui,
+       un socio de région ne pouvait répondre que « Fuera de Santiago », inexploitable
+       pour aller chercher des commerces chez lui. */
+    .comuna-extra { display: none; margin-top: 12px; }
+    .comuna-extra.on { display: block; }
+    .comuna-extra input { width: 100%; padding: 13px 14px; border-radius: 12px; font-size: 1rem;
+      border: 1.5px solid rgba(11,24,48,.25); background: #fff; color: #0B1830; }
+    .comuna-extra button { width: 100%; margin-top: 10px; padding: 13px 14px; border: 0; cursor: pointer;
+      border-radius: 12px; font-size: 1rem; font-weight: 800; background: #13243B; color: #FBF9F4; }
   </style>
 </head>
 <body class="comuna-page">
@@ -33,6 +42,11 @@
     <select id="sel" aria-label="Tu comuna">
       <option value="" selected disabled>Elige tu comuna</option>
     </select>
+    <div class="comuna-extra" id="extra">
+      <input id="libre" type="text" maxlength="60" autocomplete="address-level2"
+             placeholder="¿En qué ciudad o comuna?" aria-label="Tu ciudad o comuna">
+      <button id="ok" type="button">Listo</button>
+    </div>
   </div>
   <script>
     const WEBHOOK = "https://script.google.com/macros/s/AKfycbw5A2Q9Q-ErMxAg7B-0aeqeRat_uGgXQkLNxZSRQQPJkv3dSA1fAtoxKQNgXKN3MrMI/exec";
@@ -48,18 +62,40 @@
       const o = document.createElement("option"); o.value = o.textContent = c; sel.appendChild(o);
     });
     const email = new URLSearchParams(location.search).get("e") || "";
-    sel.addEventListener("change", () => {
-      if (!sel.value) return;
+    const extra = document.getElementById("extra");
+    const libre = document.getElementById("libre");
+    // Les deux seules options qui ne disent pas où la personne vit vraiment.
+    const VAGAS = ["Otra comuna de Santiago", "Fuera de Santiago (regiones)"];
+
+    function enviar(comuna) {
       fetch(WEBHOOK, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ tipo: "comuna", email, comuna: sel.value }),
+        body: JSON.stringify({ tipo: "comuna", email, comuna }),
       }).catch(() => {});
       document.getElementById("card").innerHTML =
         '<img src="/assets/logo.png" alt="GanaYa">' +
         '<p class="gracias">¡Gracias! Eso nos ayuda harto.</p>' +
         '<p>Vamos a partir por las comunas con más inscritos.</p>' +
         '<p><a class="ig" href="https://instagram.com/ganayalatam">Síguenos en Instagram → @ganayalatam</a></p>';
+    }
+
+    sel.addEventListener("change", () => {
+      if (!sel.value) return;
+      // Comuna précise : un clic et c'est fini, comme avant.
+      if (VAGAS.indexOf(sel.value) === -1) { enviar(sel.value); return; }
+      // Option vague : on demande la ville exacte, sans bloquer.
+      extra.classList.add("on");
+      libre.focus();
+    });
+
+    document.getElementById("ok").addEventListener("click", () => {
+      // Si la personne ne précise rien, on garde quand même sa réponse d'origine.
+      const txt = libre.value.trim();
+      enviar(txt ? txt : sel.value);
+    });
+    libre.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); document.getElementById("ok").click(); }
     });
   </script>
 </body>
