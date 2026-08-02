@@ -251,6 +251,138 @@ function showErr(id, on) {
   document.getElementById(`err-${id}`).hidden = !on;
 }
 
+// ---------- Validation du correo ----------
+// La regex d'origine (/.+@.+\..+/) laissait passer les fautes de frappe les plus
+// fréquentes du formulaire : gmail.com82, gmail.comm, gmall.com, hotmail.clm.
+// Résultat : le mail de bienvenue rebondit, la personne n'entend jamais parler de
+// nous, et le taux de rebond dégrade la réputation d'envoi de tout le domaine.
+//
+// On ne se contente pas de refuser : quand la faute est reconnaissable, on propose
+// la correction. Une inscription récupérée vaut mieux qu'un formulaire abandonné.
+
+const DOMINIOS_CONOCIDOS = [
+  "gmail.com", "hotmail.com", "hotmail.cl", "hotmail.es", "outlook.com",
+  "outlook.cl", "outlook.es", "yahoo.com", "yahoo.es", "yahoo.cl",
+  "icloud.com", "me.com", "live.cl", "live.com", "vtr.net", "gmail.cl",
+  "proton.me", "protonmail.com", "duocuc.cl", "uc.cl", "udec.cl", "usach.cl",
+];
+// Niveaux intermédiaires légitimes : .com.ar, .co.uk. Partout ailleurs, un « com »
+// ou un « cl » au milieu du domaine trahit une adresse collée à une autre.
+const NIVEL_INTERMEDIO = ["com", "co", "net", "org", "gob", "edu", "ac"];
+
+function distancia(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 0; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      d[i][j] = Math.min(
+        d[i - 1][j] + 1,
+        d[i][j - 1] + 1,
+        d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+  return d[a.length][b.length];
+}
+
+// « com » ou « cl » suivi de 1 à 3 caractères collés : .comm, .coml, .com82,
+// .comki, .clm. La borne haute épargne les vrais TLD longs comme .company.
+const TLD_DEFORMADO = /^(com|cl)[a-z0-9]{1,3}$/;
+
+function estructuraValida(dom) {
+  const p = dom.split(".");
+  if (p.length < 2 || p.some((x) => x.length === 0)) return false;
+  const tld = p[p.length - 1];
+  if (!/^[a-z]{2,24}$/.test(tld)) return false;              // .com8 → dehors
+  if (TLD_DEFORMADO.test(tld)) return false;
+  for (let i = 0; i < p.length - 1; i++) {
+    if (NIVEL_INTERMEDIO.includes(p[i])) {
+      const pegadoAlTld = i === p.length - 2;
+      if (!(pegadoAlTld && /^[a-z]{2}$/.test(tld))) return false;
+    }
+  }
+  return true;
+}
+
+function prefijoComun(a, b) {
+  let n = 0;
+  while (n < a.length && n < b.length && a[n] === b[n]) n++;
+  return n;
+}
+
+// À distance égale on préfère le domaine qui partage le plus long début :
+// « hotmail.clm » doit suggérer hotmail.cl et non hotmail.com.
+function masCercano(dom, maxDist) {
+  let mejor = null, mejorDist = Infinity, mejorPref = -1;
+  for (const d of DOMINIOS_CONOCIDOS) {
+    const dist = distancia(dom, d);
+    if (dist > maxDist) continue;
+    const pref = prefijoComun(dom, d);
+    if (dist < mejorDist || (dist === mejorDist && pref > mejorPref)) {
+      mejor = d; mejorDist = dist; mejorPref = pref;
+    }
+  }
+  return mejor;
+}
+
+// Cas du copier-coller : « gmail.commail.comki » commence par un domaine connu.
+function porPrefijo(dom) {
+  return DOMINIOS_CONOCIDOS.find((d) => dom.startsWith(d + ".") || dom.startsWith(d)) || null;
+}
+
+/** → { ok } | { ok:false } | { ok:false, sugerencia:"pedro@gmail.com" } */
+function revisarCorreo(valor) {
+  const v = (valor || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+$/.test(v)) return { ok: false };
+  const [buzon, dom] = v.split("@");
+  if (!estructuraValida(dom)) {
+    const cerca = masCercano(dom, 3) || porPrefijo(dom);
+    return cerca ? { ok: false, sugerencia: `${buzon}@${cerca}` } : { ok: false };
+  }
+  if (DOMINIOS_CONOCIDOS.includes(dom)) return { ok: true };
+  // Domaine inconnu mais bien formé (correo de empresa) : on laisse passer, sauf
+  // s'il est à un cheveu d'un domaine courant, auquel cas c'est une faute de frappe.
+  const cerca = masCercano(dom, 2);
+  return cerca ? { ok: false, sugerencia: `${buzon}@${cerca}` } : { ok: true };
+}
+
+function pintarErrorCorreo(res) {
+  const el = document.getElementById("err-email");
+  if (res.ok) {
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  if (!res.sugerencia) {
+    el.textContent = "Revisa tu correo, parece incompleto";
+    return;
+  }
+  el.textContent = "¿Quisiste decir ";
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "sugerencia-correo";
+  b.textContent = res.sugerencia;
+  b.addEventListener("click", () => {
+    document.getElementById("email").value = res.sugerencia;
+    el.hidden = true;
+  });
+  el.appendChild(b);
+  el.appendChild(document.createTextNode("?"));
+}
+
+// Contrôle au blur, pas seulement à l'envoi : la personne voit la faute au moment
+// où elle quitte le champ, quand elle a encore son adresse en tête.
+document.addEventListener("DOMContentLoaded", () => {
+  const campo = document.getElementById("email");
+  if (!campo) return;
+  campo.addEventListener("blur", () => {
+    if (!campo.value.trim()) return;
+    pintarErrorCorreo(revisarCorreo(campo.value));
+  });
+  campo.addEventListener("input", () => {
+    const el = document.getElementById("err-email");
+    if (el) el.hidden = true;
+  });
+});
+
 function utm(name) {
   return new URLSearchParams(location.search).get(name) || "";
 }
@@ -342,11 +474,12 @@ form.addEventListener("submit", async (ev) => {
   const telRaw = document.getElementById("whatsapp").value.replace(/[\s\-().]/g, "");
   const consent = document.getElementById("consent").checked;
 
-  const emailOk = /.+@.+\..+/.test(email);
+  const revision = revisarCorreo(email);
+  const emailOk = revision.ok;
   // Longueur générique : l'indicatif est maintenant choisi à part, le numéro
   // local varie de 6 à 12 chiffres selon le pays.
   const telOk = /^\d{6,12}$/.test(telRaw) && (ccSelect.value + telRaw).length <= 15;
-  showErr("email", !emailOk);
+  pintarErrorCorreo(revision);
   showErr("whatsapp", !telOk);
   showErr("consent", !consent);
   if (!emailOk || !telOk || !consent) return;

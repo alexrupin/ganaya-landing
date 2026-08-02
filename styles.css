@@ -641,3 +641,16 @@ body.noche h2 { color: var(--noche-texto); }
   border: 1.5px solid rgba(11,24,48,.25); background: #fff; color: #0B1830; }
 #comuna-ok { width: 100%; margin-top: 8px; padding: 12px 14px; border: 0; cursor: pointer;
   border-radius: 12px; font-size: 1rem; font-weight: 800; background: #F4B740; color: #13243B; }
+
+/* Bouton de correction proposé quand le correo saisi ressemble à une faute de
+   frappe connue (voir revisarCorreo dans app.js). */
+.sugerencia-correo {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
