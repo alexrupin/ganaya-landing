@@ -34,10 +34,16 @@
       <div class="jauge">
         <div class="jauge-top">
           <span class="jauge-label"><span class="jauge-dot" aria-hidden="true"></span>Inscritos en el pre-lanzamiento</span>
-          <span class="jauge-num" id="jauge-num">2.500 socios</span>
+          <!-- Valeur écrite en dur au déploiement, volontairement SOUS le compte
+               réel (1.767 au 06/08/2026). Le fetch du compteur met ~7 s à
+               répondre : pendant ce temps la page affichait « 2.500 socios »
+               avec une barre vide, ce qui se lit comme un objectif jamais
+               atteint. La quasi totalité du trafic Meta ne reste pas 7 s sur
+               le hero. Le fetch ne sert donc plus qu'à corriger à la hausse. -->
+          <span class="jauge-num" id="jauge-num">1.700 / 2.500</span>
         </div>
-        <div class="jauge-track"><div class="jauge-fill" id="jauge-fill"></div></div>
-        <p class="jauge-estado" id="jauge-estado">Inscripciones abiertas: los primeros tendrán beneficios exclusivos</p>
+        <div class="jauge-track"><div class="jauge-fill" id="jauge-fill" style="width:68%"></div></div>
+        <p class="jauge-estado" id="jauge-estado">Los primeros inscritos tendrán beneficios exclusivos</p>
       </div>
       <a class="link-secundario" href="#beneficios">Ver beneficios ↓</a>
     </div>
@@ -64,7 +70,7 @@
 
   <!-- 3. Premios aspiracionales -->
   <section data-reveal class="premios">
-    <h2>Premios que podrás encontrar en <span class="oro">GanaYa</span></h2>
+    <h2>Y además, concursos exclusivos para <span class="oro">socios</span></h2>
     <div class="premios-escena" role="img" aria-label="Premios referenciales: camioneta 0 km, smartphone, moto y viajes">
       <span class="premios-glow" aria-hidden="true"></span>
       <img class="escena-phone" src="assets/brand/premio-phone.png" alt="">
@@ -136,15 +142,16 @@
         concursos promocionales exclusivos para socios.</p>
     </details>
     <details>
-      <summary>¿Es esto una lotería?</summary>
-      <p>No. GanaYa es un programa de beneficios: pagas por descuentos que usas
-        todos los días. Los concursos promocionales son un beneficio adicional para
-        socios, regidos por bases legales públicas.</p>
+      <summary>¿GanaYa es un club de descuentos o algo más?</summary>
+      <p>Es un club de descuentos. Pagas por los descuentos que usas todos los días
+        y los concursos promocionales vienen incluidos por ser socio, regidos por
+        bases legales públicas.</p>
     </details>
     <details>
       <summary>¿Cuánto costará la membresía?</summary>
-      <p>Los precios se anunciarán en el lanzamiento. Los primeros inscritos tendrán
-        beneficios exclusivos.</p>
+      <p>$9.990 al mes ($99.900 al año, sin permanencia). Es el precio de lanzamiento
+        y sube a $11.990 el 01/11/2026: si entras ahora, mantienes tu precio. Con 2 o
+        3 descuentos al mes ya la recuperas.</p>
     </details>
     <details>
       <summary>¿Cómo accedo a los concursos promocionales?</summary>
@@ -226,10 +233,9 @@
 
   <!-- 10. Footer -->
   <footer>
-    <p>GanaYa es un programa de beneficios y membresía promocional. No es un juego de
-      azar, lotería ni casa de apuestas. Los concursos promocionales son un beneficio
-      exclusivo para socios y se rigen por sus bases legales, disponibles en este
-      sitio con cada concurso.</p>
+    <p>GanaYa es un programa de beneficios y membresía. Los concursos promocionales
+      son un beneficio exclusivo para socios y se rigen por sus bases legales,
+      disponibles en este sitio con cada concurso.</p>
     <nav class="footer-links">
       <a href="terminos.html">Términos y Condiciones</a> ·
       <a href="privacidad.html">Política de Privacidad</a> ·
@@ -241,7 +247,9 @@
 
   <!-- 0. Sticky CTA -->
   <div class="sticky-cta" id="sticky-cta" hidden>
-    <button class="cta cta-sticky" type="button">Únete gratis</button>
+    <!-- « Únete gratis » promettait le gratuit sur un produit payant : c'est
+         l'aimant à mauvais leads. Même libellé que le CTA du hero. -->
+    <button class="cta cta-sticky" type="button">Quiero mi acceso anticipado</button>
   </div>
 
   <canvas id="confetti" aria-hidden="true"></canvas>

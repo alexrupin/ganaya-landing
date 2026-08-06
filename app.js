@@ -478,7 +478,15 @@ form.addEventListener("submit", async (ev) => {
   const emailOk = revision.ok;
   // Longueur générique : l'indicatif est maintenant choisi à part, le numéro
   // local varie de 6 à 12 chiffres selon le pays.
-  const telOk = /^\d{6,12}$/.test(telRaw) && (ccSelect.value + telRaw).length <= 15;
+  // Beaucoup de Chiliens saisissent leur numéro AVEC l'indicatif (56912345678)
+  // alors que le sélecteur porte déjà « 56 ». On envoyait alors +5656912345678,
+  // un numéro inutilisable, et le lead était perdu en silence. On retire le
+  // préfixe redondant avant de valider.
+  const telLimpio =
+    telRaw.startsWith(ccSelect.value) && telRaw.length > ccSelect.value.length + 5
+      ? telRaw.slice(ccSelect.value.length)
+      : telRaw;
+  const telOk = /^\d{6,12}$/.test(telLimpio) && (ccSelect.value + telLimpio).length <= 15;
   pintarErrorCorreo(revision);
   showErr("whatsapp", !telOk);
   showErr("consent", !consent);
@@ -494,7 +502,7 @@ form.addEventListener("submit", async (ev) => {
   const payload = {
     nombre,
     email,
-    whatsapp: `+${ccSelect.value}${telRaw}`,
+    whatsapp: `+${ccSelect.value}${telLimpio}`,
     source: utm("utm_source"),
     campaign: utm("utm_campaign"),
     ua: navigator.userAgent.slice(0, 120),
