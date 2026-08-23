@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comercios · GanaYa</title>
+  <meta name="robots" content="noindex">
+  <!-- gana-ya.com/comercios : dirección corta y dictable del formulario de
+       comercios, que vive en app.gana-ya.com/comercios. Conserva los
+       parámetros (?via=terreno del QR del comercial, ?completo=1). -->
+  <script>
+    (function () {
+      var q = window.location.search || '';
+      window.location.replace('https://app.gana-ya.com/comercios' + q);
+    })();
+  </script>
+  <meta http-equiv="refresh" content="0; url=https://app.gana-ya.com/comercios">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+  <style>
+    body { font-family: 'Montserrat', -apple-system, 'Helvetica Neue', Arial, sans-serif; background: #13243B; color: #fff;
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; margin: 0; }
+    a { color: #FFD966; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <p>Te llevamos al formulario de comercios. Si no pasa nada, <a href="https://app.gana-ya.com/comercios">toca aquí</a>.</p>
+</body>
+</html>
