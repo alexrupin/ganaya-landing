@@ -6,15 +6,20 @@
   <title>Comercios · GanaYa</title>
   <meta name="robots" content="noindex">
   <!-- gana-ya.com/comercios : dirección corta y dictable del formulario de
-       comercios, que vive en app.gana-ya.com/comercios. Conserva los
-       parámetros (?via=terreno del QR del comercial, ?completo=1). -->
+       comercios, que vive en app.gana-ya.com/comercios. Quien llega por esta
+       dirección ya habló con nosotros (correo, teléfono, Instagram), así que
+       va directo a la ficha COMPLETA con el convenio (completo=1), decisión
+       del 25/08/2026. El formulario corto queda para las ads, en la dirección
+       de la app sin parámetro. Conserva los demás parámetros (?via=terreno del
+       QR del comercial). -->
   <script>
     (function () {
       var q = window.location.search || '';
+      if (!/[?&]completo=/.test(q)) q += (q ? '&' : '?') + 'completo=1';
       window.location.replace('https://app.gana-ya.com/comercios' + q);
     })();
   </script>
-  <meta http-equiv="refresh" content="0; url=https://app.gana-ya.com/comercios">
+  <meta http-equiv="refresh" content="0; url=https://app.gana-ya.com/comercios?completo=1">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
   <style>
     body { font-family: 'Montserrat', -apple-system, 'Helvetica Neue', Arial, sans-serif; background: #13243B; color: #fff;
@@ -23,6 +28,6 @@
   </style>
 </head>
 <body>
-  <p>Te llevamos al formulario de comercios. Si no pasa nada, <a href="https://app.gana-ya.com/comercios">toca aquí</a>.</p>
+  <p>Te llevamos al formulario de comercios. Si no pasa nada, <a href="https://app.gana-ya.com/comercios?completo=1">toca aquí</a>.</p>
 </body>
 </html>
