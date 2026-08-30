@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GanaYa</title>
+  <meta name="robots" content="noindex">
+  <!-- gana-ya.com/ig : dirección corta del link en bio de Instagram
+       (@ganayalatam). Redirige a la portada con utm_source=instagram para que
+       cada inscrito llegue marcado en la columna "source" del Sheet fundadora
+       y se pueda distinguir orgánico (instagram) de ads (meta). Decisión del
+       30/08/2026. Si algún día se agregan parámetros al link, se conservan. -->
+  <script>
+    (function () {
+      var q = window.location.search || '';
+      q += (q ? '&' : '?') + 'utm_source=instagram&utm_campaign=bio';
+      window.location.replace('https://gana-ya.com/' + q);
+    })();
+  </script>
+  <meta http-equiv="refresh" content="0; url=https://gana-ya.com/?utm_source=instagram&utm_campaign=bio">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+  <style>
+    body { font-family: 'Montserrat', -apple-system, 'Helvetica Neue', Arial, sans-serif; background: #13243B; color: #fff;
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; margin: 0; }
+    a { color: #FFD966; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <p>Te llevamos a GanaYa. Si no pasa nada, <a href="https://gana-ya.com/?utm_source=instagram&utm_campaign=bio">toca aquí</a>.</p>
+</body>
+</html>
