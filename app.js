@@ -4,6 +4,10 @@
 // ============================================================
 const CONFIG = {
   WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbw5A2Q9Q-ErMxAg7B-0aeqeRat_uGgXQkLNxZSRQQPJkv3dSA1fAtoxKQNgXKN3MrMI/exec",
+  // Relais rapide du compteur (app Vercel, cache 10 min) : le script Google
+  // met 10 secondes à répondre, la jauge restait bloquée sur son chiffre
+  // statique pendant ce temps (Alexandre, 15/09/2026).
+  COUNT_URL: "https://app.gana-ya.com/api/inscritos",
   PIXEL_ID: "1592168032329875", // Pixel Meta « GanaYa Pixel » (dataset Gana-Ya SpA)
 };
 
@@ -70,23 +74,57 @@ function confettiDesde(el) {
 // (GET ?count=1 → {"count": N}), on affiche « N / 2.500 » et on remplit.
 // Vocabulaire : jamais « cupo » ni aucun mot de la red list dans le texte public.
 const SOCIOS_TOTAL = 2500;
+const JAUGE_CACHE = "gy_inscritos";
 (function jaugeReal() {
-  if (!CONFIG.WEBHOOK_URL) return;
-  fetch(CONFIG.WEBHOOK_URL + "?count=1")
-    .then((r) => r.json())
-    .then((d) => {
-      if (!d || typeof d.count !== "number" || d.count <= 0) return;
-      const n = Math.min(d.count, SOCIOS_TOTAL);
-      document.getElementById("jauge-num").textContent =
-        `${n.toLocaleString("es-CL")} / ${SOCIOS_TOTAL.toLocaleString("es-CL")}`;
-      document.getElementById("jauge-estado").textContent =
-        "Los primeros inscritos tendrán beneficios exclusivos";
-      const fill = document.getElementById("jauge-fill");
-      requestAnimationFrame(() => {
-        fill.style.width = `${Math.max((n / SOCIOS_TOTAL) * 100, 2)}%`;
-      });
+  const num = document.getElementById("jauge-num");
+  const fill = document.getElementById("jauge-fill");
+  if (!num || !fill) return;
+  // « 2.433 / 2.500 » : la partie avant la barre, sans le point des milliers.
+  const leerMostrado = () => parseInt(((num.textContent || "").split("/")[0] || "").replace(/\D/g, ""), 10) || 0;
+
+  // Affiche N, en comptant depuis le chiffre affiché : plus de saut sec.
+  function mostrar(n, animar) {
+    const meta = Math.min(n, SOCIOS_TOTAL);
+    const desde = animar ? leerMostrado() : meta;
+    const inicio = performance.now();
+    const paso = (t) => {
+      const p = Math.min((t - inicio) / 700, 1);
+      const v = Math.round(desde + (meta - desde) * (1 - Math.pow(1 - p, 3)));
+      num.textContent = `${v.toLocaleString("es-CL")} / ${SOCIOS_TOTAL.toLocaleString("es-CL")}`;
+      if (p < 1) requestAnimationFrame(paso);
+    };
+    requestAnimationFrame(paso);
+    fill.style.width = `${Math.max((meta / SOCIOS_TOTAL) * 100, 2)}%`;
+  }
+
+  // 1. La dernière valeur vue par ce navigateur, tout de suite.
+  try {
+    const guardado = parseInt(localStorage.getItem(JAUGE_CACHE) || "", 10);
+    if (guardado > 0) mostrar(guardado, false);
+  } catch (_) { /* stockage indisponible : on garde le chiffre statique */ }
+
+  // 2. Le relais rapide (Vercel, cache 10 min), sinon le script Google.
+  const leer = (url, ms) => {
+    const ctrl = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), ms) : null;
+    const limpiar = () => { if (timer) clearTimeout(timer); };
+    // Pas de .finally : les vieux Safari ne l'ont pas (relecture Codex, 15/09).
+    return fetch(url, ctrl ? { signal: ctrl.signal } : undefined)
+      .then((r) => r.json())
+      .then((d) => (d && typeof d.count === "number" && d.count > 0 ? d.count : Promise.reject(new Error("sin count"))))
+      .then((n) => { limpiar(); return n; }, (e) => { limpiar(); throw e; });
+  };
+  const fuentes = [];
+  if (CONFIG.COUNT_URL) fuentes.push(() => leer(CONFIG.COUNT_URL, 4000));
+  if (CONFIG.WEBHOOK_URL) fuentes.push(() => leer(CONFIG.WEBHOOK_URL + "?count=1", 20000));
+  fuentes.reduce((cadena, f) => cadena.catch(f), Promise.reject(new Error("inicio")))
+    .then((n) => {
+      mostrar(n, true);
+      try { localStorage.setItem(JAUGE_CACHE, String(n)); } catch (_) { /* sin stockage */ }
+      const estado = document.getElementById("jauge-estado");
+      if (estado) estado.textContent = "Los primeros inscritos tendrán beneficios exclusivos";
     })
-    .catch(() => { /* compteur pas encore exposé : on garde l'affichage neutre */ });
+    .catch(() => { /* aucune source : on garde l'affichage statique */ });
 })();
 
 // ---------- Pixel Meta ----------
