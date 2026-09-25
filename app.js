@@ -20,6 +20,48 @@ document.documentElement.classList.add("js");
 // en 2 s). Les vieux clients en cache qui n'envoient pas elapsed_ms passent.
 const T0 = Date.now();
 
+// Premier lien reçu, valable 30 jours sans prolongation à chaque visite.
+// Cookie distinct partagé avec l'app ; localStorage sert de secours local.
+const REF_KEY = "ganaya_ref_landing";
+const REF_AGE = 2592000;
+function leerRef(value) {
+  try {
+    const parts = decodeURIComponent(value || "").split(".");
+    const at = Number(parts[1]);
+    if (parts.length !== 2 || !/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(parts[0]) ||
+        !Number.isSafeInteger(at) || at <= 0 || at > T0 || T0 - at >= REF_AGE * 1000) return null;
+    return { code: parts[0], at };
+  } catch (_) { return null; }
+}
+const REFERIDO = (() => {
+  let saved = null;
+  try { saved = leerRef(localStorage.getItem(REF_KEY)); } catch (_) { /* stockage privé */ }
+  const cookie = leerRef(document.cookie.split("; ").find(c => c.startsWith(REF_KEY + "="))?.slice(REF_KEY.length + 1));
+  if (cookie && (!saved || cookie.at < saved.at)) saved = cookie;
+  const code = new URLSearchParams(location.search).get("ref");
+  if (!saved && code && /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/.test(code)) saved = { code, at: T0 };
+  if (!saved) return null;
+  const value = saved.code + "." + saved.at;
+  try { localStorage.setItem(REF_KEY, value); } catch (_) { /* le lien reste utilisable */ }
+  const domain = /^(www\.)?gana-ya\.com$/.test(location.hostname) ? "; Domain=gana-ya.com" : "";
+  document.cookie = REF_KEY + "=" + encodeURIComponent(value) + "; Max-Age=" +
+    Math.max(1, REF_AGE - Math.floor((T0 - saved.at) / 1000)) + "; Path=/; SameSite=Lax" + domain +
+    (location.protocol === "https:" ? "; Secure" : "");
+  return saved.code;
+})();
+function linkRegistro() {
+  const url = new URL("https://app.gana-ya.com/registro");
+  if (REFERIDO) url.searchParams.set("ref", REFERIDO);
+  return url.href;
+}
+document.querySelectorAll('a[href]').forEach(a => {
+  const url = new URL(a.href, location.href);
+  if (REFERIDO && url.origin === "https://app.gana-ya.com" && ["/registro", "/login"].includes(url.pathname)) {
+    url.searchParams.set("ref", REFERIDO);
+    a.href = url.href;
+  }
+});
+
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // ---------- Confetti (canvas maison, ~1 Ko) ----------
@@ -543,6 +585,7 @@ form.addEventListener("submit", async (ev) => {
     whatsapp: `+${ccSelect.value}${telLimpio}`,
     source: utm("utm_source"),
     campaign: utm("utm_campaign"),
+    ...(REFERIDO ? { ref: REFERIDO } : {}),
     ua: navigator.userAgent.slice(0, 120),
     elapsed_ms: Date.now() - T0,
   };
@@ -564,6 +607,7 @@ form.addEventListener("submit", async (ev) => {
     form.outerHTML =
       '<div class="exito"><span class="exito-check" aria-hidden="true">✓</span>' +
       '<p>¡Listo! Tu lugar está reservado.<br>Te avisaremos antes que nadie.</p>' +
+      '<p><a href="' + linkRegistro() + '">Crear mi cuenta en GanaYa</a></p>' +
       montarComunaHTML() + "</div>";
     activarComuna(email);
   } catch (e) {
