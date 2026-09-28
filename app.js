@@ -15,6 +15,19 @@ const CONFIG = {
 // sous html.js, pour ne jamais laisser la page vide sans JavaScript.
 document.documentElement.classList.add("js");
 
+// Turnstile (28/09/2026), voir turnstile.js : un jeton par envoi, vérifié par le webhook.
+// Sans turnstile.js (bloqué, absent), les formulaires envoient sans jeton et le webhook tranche.
+function turnstileEn(id, accion) {
+  const caja = document.getElementById(id);
+  return window.GanaYaTurnstile && caja
+    ? window.GanaYaTurnstile.crear(caja, accion)
+    : { jeton: () => Promise.resolve(null), pendiente: () => false, renovar() {} };
+}
+const VERIFICANDO = "Verificando que eres una persona…";
+const NO_VERIFICADO = "No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo.";
+const ERROR_ENVIO = "Ups, algo falló. Inténtalo de nuevo.";
+const conJeton = (turnstile) => (turnstile ? { turnstile } : {});
+
 // Anti-bot : heure de chargement de la page. Le webhook rejette une inscription
 // envoyée moins de 2 s après le chargement (un humain ne remplit pas 3 champs
 // en 2 s). Les vieux clients en cache qui n'envoient pas elapsed_ms passent.
@@ -260,20 +273,35 @@ const votoMsg = document.getElementById("voto-msg");
 async function confirmarWebhook(res) {
   if (!res.ok) throw new Error("HTTP " + res.status);
   const resultado = await res.json();
+  // Jeton Turnstile refusé : seul un rechargement de la page en donne un bon.
+  if (resultado && resultado.error === "captcha") throw new Error("captcha");
   if (!resultado || resultado.ok !== true) throw new Error("Webhook rechazado");
 }
+function mensajeError(e) {
+  return e && e.message === "captcha" ? NO_VERIFICADO : ERROR_ENVIO;
+}
 
+const tsVoto = turnstileEn("ts-voto", "voto");
+// Vote et idée partagent un widget : un envoi à la fois, le suivant attend la fin du précédent
+// (son jeton neuf compris) au lieu d'attendre un jeton pendant que l'autre envoi tourne.
+let colaVoto = Promise.resolve();
 function enviarVoto(payload) {
+  const envio = colaVoto.then(() => enviarVotoAhora(payload));
+  colaVoto = envio.catch(() => {});
+  return envio;
+}
+function enviarVotoAhora(payload) {
   if (!CONFIG.WEBHOOK_URL) return Promise.reject(new Error("no webhook"));
-  return fetch(CONFIG.WEBHOOK_URL, {
+  if (tsVoto.pendiente()) votoMsg.textContent = VERIFICANDO;
+  return tsVoto.jeton().then((turnstile) => fetch(CONFIG.WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify(Object.assign({
       tipo: "voto",
       source: new URLSearchParams(location.search).get("utm_source") || "",
       ua: navigator.userAgent.slice(0, 120),
-    }, payload)),
-  }).then(confirmarWebhook);
+    }, conJeton(turnstile), payload)),
+  })).then(confirmarWebhook).finally(() => tsVoto.renovar());
 }
 
 document.querySelectorAll(".opcion").forEach((btn) => {
@@ -290,10 +318,10 @@ document.querySelectorAll(".opcion").forEach((btn) => {
         confettiDesde(btn);
         votoMsg.textContent = "¡Voto registrado! Regístrate abajo para no perderte el concurso del premio más votado.";
       })
-      .catch(() => {
+      .catch((e) => {
         document.querySelectorAll(".opcion").forEach((b) => { b.disabled = false; });
         btn.classList.remove("elegida");
-        votoMsg.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+        votoMsg.textContent = mensajeError(e);
         votoMsg.style.color = "#C0392B";
       });
   });
@@ -316,24 +344,29 @@ document.querySelectorAll(".opcion").forEach((btn) => {
   });
 });
 
-document.getElementById("btn-idea").addEventListener("click", () => {
+const btnIdea = document.getElementById("btn-idea");
+btnIdea.addEventListener("click", () => {
   const idea = document.getElementById("otra-idea").value.trim();
-  if (!idea) return;
+  if (!idea || btnIdea.disabled) return;
+  // Un seul envoi à la fois : deux clics rapides partageraient le même jeton à usage unique.
+  btnIdea.disabled = true;
   enviarVoto({ premio: "(otra idea)", otra_idea: idea })
     .then(() => {
       document.getElementById("otra-idea").value = "";
       votoMsg.textContent = "¡Gracias por tu idea! Nuestro equipo la revisará.";
     })
-    .catch(() => {
-      votoMsg.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+    .catch((e) => {
+      votoMsg.textContent = mensajeError(e);
       votoMsg.style.color = "#C0392B";
-    });
+    })
+    .finally(() => { btnIdea.disabled = false; });
 });
 
 // ---------- Formulaire ----------
 const form = document.getElementById("form-registro");
 const msg = document.getElementById("form-msg");
 let registroEnviando = false;
+const tsRegistro = turnstileEn("ts-registro", "lista");
 
 function showErr(id, on) {
   document.getElementById(`err-${id}`).hidden = !on;
@@ -504,7 +537,7 @@ function montarComunaHTML() {
     '<input id="comuna-libre" type="text" maxlength="60" autocomplete="address-level2" ' +
     'placeholder="¿En qué ciudad o comuna?" aria-label="Tu ciudad o comuna">' +
     '<button id="comuna-ok" type="button">Listo</button>' +
-    "</div></div>"
+    '</div><div class="ts-caja" id="ts-comuna"></div></div>'
   );
 }
 // Les deux seules options qui ne disent pas où la personne vit vraiment.
@@ -525,6 +558,7 @@ function activarComuna(email) {
   retry.setAttribute("data-comuna-retry", "");
   retry.hidden = true;
   box.append(error, retry);
+  const tsComuna = turnstileEn("ts-comuna", "comuna");
   let enviando = false, ultimaComuna = "";
   retry.addEventListener("click", () => enviarComuna(ultimaComuna));
 
@@ -536,16 +570,18 @@ function activarComuna(email) {
     sel.disabled = libre.disabled = ok.disabled = retry.disabled = true;
     try {
       if (!CONFIG.WEBHOOK_URL) throw new Error("no webhook");
+      const turnstile = await tsComuna.jeton();
       const res = await fetch(CONFIG.WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ tipo: "comuna", email, comuna }),
+        body: JSON.stringify(Object.assign({ tipo: "comuna", email, comuna }, conJeton(turnstile))),
       });
       await confirmarWebhook(res);
       box.innerHTML = '<p class="comuna-gracias">¡Gracias! Eso nos ayuda harto.</p>';
-    } catch (_) {
-      error.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+    } catch (e) {
+      error.textContent = mensajeError(e);
       error.hidden = retry.hidden = false;
+      tsComuna.renovar();
     } finally {
       enviando = false;
       sel.disabled = libre.disabled = ok.disabled = retry.disabled = false;
@@ -630,6 +666,10 @@ form.addEventListener("submit", async (ev) => {
   btn.textContent = "Enviando…";
 
   try {
+    // Le jeton est d'habitude prêt avant la fin de la saisie ; sinon on l'attend, en le disant.
+    if (tsRegistro.pendiente()) msg.textContent = VERIFICANDO;
+    Object.assign(payload, conJeton(await tsRegistro.jeton()));
+    msg.textContent = "";
     // Content-Type text/plain : évite le préflight CORS refusé par Apps Script
     const res = await fetch(CONFIG.WEBHOOK_URL, {
       method: "POST",
@@ -647,10 +687,12 @@ form.addEventListener("submit", async (ev) => {
     activarComuna(email);
   } catch (e) {
     console.error("GanaYa submit:", e);
-    msg.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+    msg.textContent = mensajeError(e);
     msg.className = "err";
     btn.disabled = false;
     btn.textContent = "Reservar mi lugar";
+    // Le jeton est consommé, même refusé : le prochain essai en demande un neuf.
+    tsRegistro.renovar();
   } finally {
     registroEnviando = false;
   }

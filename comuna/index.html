@@ -42,9 +42,11 @@
              placeholder="¿En qué ciudad o comuna?" aria-label="Tu ciudad o comuna">
       <button id="ok" type="button">Listo</button>
     </div>
+    <div id="ts-comuna"></div>
     <p id="error" role="alert" hidden></p>
     <button id="retry" type="button" data-comuna-retry hidden>Reintentar</button>
   </div>
+  <script src="/turnstile.js"></script>
   <script>
     const WEBHOOK = "https://script.google.com/macros/s/AKfycbw5A2Q9Q-ErMxAg7B-0aeqeRat_uGgXQkLNxZSRQQPJkv3dSA1fAtoxKQNgXKN3MrMI/exec";
     const COMUNAS = ["Buin","Cerro Navia","Colina","Conchalí","El Bosque","Estación Central",
@@ -66,6 +68,10 @@
     const error = document.getElementById("error");
     const retry = document.getElementById("retry");
     const ok = document.getElementById("ok");
+    // Turnstile (28/09/2026), voir /turnstile.js : sans lui, l'envoi part sans jeton et le webhook tranche.
+    const ts = window.GanaYaTurnstile
+      ? window.GanaYaTurnstile.crear(document.getElementById("ts-comuna"), "comuna")
+      : { jeton: () => Promise.resolve(null), renovar() {} };
     let enviando = false, ultimaComuna = "";
     retry.addEventListener("click", () => enviar(ultimaComuna));
 
@@ -76,22 +82,28 @@
       error.hidden = retry.hidden = true;
       sel.disabled = libre.disabled = ok.disabled = retry.disabled = true;
       try {
+        const turnstile = await ts.jeton();
         const res = await fetch(WEBHOOK, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ tipo: "comuna", email, comuna }),
+          body: JSON.stringify(Object.assign({ tipo: "comuna", email, comuna }, turnstile ? { turnstile } : {})),
         });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const resultado = await res.json();
+        if (resultado && resultado.error === "captcha") throw new Error("captcha");
         if (!resultado || resultado.ok !== true) throw new Error("Webhook rechazado");
         document.getElementById("card").innerHTML =
         '<img src="/assets/logo.png" alt="GanaYa">' +
         '<p class="gracias">¡Gracias! Eso nos ayuda harto.</p>' +
         '<p>Vamos a partir por las comunas con más inscritos.</p>' +
         '<p><a class="ig" href="https://instagram.com/ganayalatam">Síguenos en Instagram → @ganayalatam</a></p>';
-      } catch (_) {
-        error.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+      } catch (e) {
+        error.textContent = e && e.message === "captcha"
+          ? "No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo."
+          : "Ups, algo falló. Inténtalo de nuevo.";
         error.hidden = retry.hidden = false;
+        // Le jeton est consommé, même refusé : le reintento en demande un neuf.
+        ts.renovar();
       } finally {
         enviando = false;
         sel.disabled = libre.disabled = ok.disabled = retry.disabled = false;

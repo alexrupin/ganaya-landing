@@ -19,6 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="/turnstile.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body class="noche">
@@ -112,6 +113,7 @@
         <button class="cta cta-mini" id="btn-idea" type="button">Enviar</button>
       </div>
     </div>
+    <div class="ts-caja" id="ts-voto"></div>
     <p id="voto-msg" role="status"></p>
     <p class="ref">Los premios de GanaYa son siempre productos y experiencias.</p>
   </section>
@@ -211,6 +213,7 @@
 
         <input id="hp" name="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
 
+        <div class="ts-caja" id="ts-registro"></div>
         <button class="cta cta-shine" type="submit">Reservar mi lugar</button>
         <p id="form-msg" role="status"></p>
         <p class="nota-form">Te avisaremos por WhatsApp y correo cuando comience el
