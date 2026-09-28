@@ -25,7 +25,7 @@
     .comuna-extra.on { display: block; }
     .comuna-extra input { width: 100%; padding: 13px 14px; border-radius: 12px; font-size: 1rem;
       border: 1.5px solid rgba(11,24,48,.25); background: #fff; color: #0B1830; }
-    .comuna-extra button { width: 100%; margin-top: 10px; padding: 13px 14px; border: 0; cursor: pointer;
+    .comuna-extra button, [data-comuna-retry] { width: 100%; margin-top: 10px; padding: 13px 14px; border: 0; cursor: pointer;
       border-radius: 12px; font-size: 1rem; font-weight: 800; background: #13243B; color: #FBF9F4; }
   </style>
 </head>
@@ -42,6 +42,8 @@
              placeholder="¿En qué ciudad o comuna?" aria-label="Tu ciudad o comuna">
       <button id="ok" type="button">Listo</button>
     </div>
+    <p id="error" role="alert" hidden></p>
+    <button id="retry" type="button" data-comuna-retry hidden>Reintentar</button>
   </div>
   <script>
     const WEBHOOK = "https://script.google.com/macros/s/AKfycbw5A2Q9Q-ErMxAg7B-0aeqeRat_uGgXQkLNxZSRQQPJkv3dSA1fAtoxKQNgXKN3MrMI/exec";
@@ -61,17 +63,39 @@
     const libre = document.getElementById("libre");
     const VAGAS = ["Otra comuna de Santiago", "Fuera de Santiago (regiones)"];
 
-    function enviar(comuna) {
-      fetch(WEBHOOK, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ tipo: "comuna", email, comuna }),
-      }).catch(() => {});
-      document.getElementById("card").innerHTML =
+    const error = document.getElementById("error");
+    const retry = document.getElementById("retry");
+    const ok = document.getElementById("ok");
+    let enviando = false, ultimaComuna = "";
+    retry.addEventListener("click", () => enviar(ultimaComuna));
+
+    async function enviar(comuna) {
+      if (enviando) return;
+      enviando = true;
+      ultimaComuna = comuna;
+      error.hidden = retry.hidden = true;
+      sel.disabled = libre.disabled = ok.disabled = retry.disabled = true;
+      try {
+        const res = await fetch(WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ tipo: "comuna", email, comuna }),
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const resultado = await res.json();
+        if (!resultado || resultado.ok !== true) throw new Error("Webhook rechazado");
+        document.getElementById("card").innerHTML =
         '<img src="/assets/logo.png" alt="GanaYa">' +
         '<p class="gracias">¡Gracias! Eso nos ayuda harto.</p>' +
         '<p>Vamos a partir por las comunas con más inscritos.</p>' +
         '<p><a class="ig" href="https://instagram.com/ganayalatam">Síguenos en Instagram → @ganayalatam</a></p>';
+      } catch (_) {
+        error.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+        error.hidden = retry.hidden = false;
+      } finally {
+        enviando = false;
+        sel.disabled = libre.disabled = ok.disabled = retry.disabled = false;
+      }
     }
 
     sel.addEventListener("change", () => {

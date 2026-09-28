@@ -256,6 +256,13 @@ new IntersectionObserver((entries) => {
 // ---------- Vote premios ----------
 const votoMsg = document.getElementById("voto-msg");
 
+// Apps Script renvoie aussi ses refus avec HTTP 200. Seul ok:true confirme le POST.
+async function confirmarWebhook(res) {
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const resultado = await res.json();
+  if (!resultado || resultado.ok !== true) throw new Error("Webhook rechazado");
+}
+
 function enviarVoto(payload) {
   if (!CONFIG.WEBHOOK_URL) return Promise.reject(new Error("no webhook"));
   return fetch(CONFIG.WEBHOOK_URL, {
@@ -266,7 +273,7 @@ function enviarVoto(payload) {
       source: new URLSearchParams(location.search).get("utm_source") || "",
       ua: navigator.userAgent.slice(0, 120),
     }, payload)),
-  });
+  }).then(confirmarWebhook);
 }
 
 document.querySelectorAll(".opcion").forEach((btn) => {
@@ -326,6 +333,7 @@ document.getElementById("btn-idea").addEventListener("click", () => {
 // ---------- Formulaire ----------
 const form = document.getElementById("form-registro");
 const msg = document.getElementById("form-msg");
+let registroEnviando = false;
 
 function showErr(id, on) {
   document.getElementById(`err-${id}`).hidden = !on;
@@ -507,16 +515,41 @@ function activarComuna(email) {
   const extra = document.getElementById("comuna-extra");
   const libre = document.getElementById("comuna-libre");
   const ok = document.getElementById("comuna-ok");
+  const box = document.getElementById("comuna-box");
+  const error = document.createElement("p");
+  error.setAttribute("role", "alert");
+  error.hidden = true;
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.textContent = "Reintentar";
+  retry.setAttribute("data-comuna-retry", "");
+  retry.hidden = true;
+  box.append(error, retry);
+  let enviando = false, ultimaComuna = "";
+  retry.addEventListener("click", () => enviarComuna(ultimaComuna));
 
-  function enviarComuna(comuna) {
-    const box = document.getElementById("comuna-box");
-    if (!CONFIG.WEBHOOK_URL) return;
-    fetch(CONFIG.WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ tipo: "comuna", email, comuna }),
-    }).catch(() => { /* meilleure chance au prochain passage, on ne bloque pas le merci */ });
-    box.innerHTML = '<p class="comuna-gracias">¡Gracias! Eso nos ayuda harto.</p>';
+  async function enviarComuna(comuna) {
+    if (enviando) return;
+    enviando = true;
+    ultimaComuna = comuna;
+    error.hidden = retry.hidden = true;
+    sel.disabled = libre.disabled = ok.disabled = retry.disabled = true;
+    try {
+      if (!CONFIG.WEBHOOK_URL) throw new Error("no webhook");
+      const res = await fetch(CONFIG.WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ tipo: "comuna", email, comuna }),
+      });
+      await confirmarWebhook(res);
+      box.innerHTML = '<p class="comuna-gracias">¡Gracias! Eso nos ayuda harto.</p>';
+    } catch (_) {
+      error.textContent = "Ups, algo falló. Inténtalo de nuevo.";
+      error.hidden = retry.hidden = false;
+    } finally {
+      enviando = false;
+      sel.disabled = libre.disabled = ok.disabled = retry.disabled = false;
+    }
   }
 
   sel.addEventListener("change", () => {
@@ -540,6 +573,7 @@ function activarComuna(email) {
 
 form.addEventListener("submit", async (ev) => {
   ev.preventDefault();
+  if (registroEnviando) return;
   msg.textContent = "";
   msg.className = "";
 
@@ -591,6 +625,7 @@ form.addEventListener("submit", async (ev) => {
   };
 
   const btn = form.querySelector('button[type="submit"]');
+  registroEnviando = true;
   btn.disabled = true;
   btn.textContent = "Enviando…";
 
@@ -601,11 +636,7 @@ form.addEventListener("submit", async (ev) => {
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    // Le webhook répond 200 même quand il refuse (plafond, données invalides) :
-    // seul « ok: true » veut dire que la ligne est écrite (audit M18, 28/09).
-    const datos = await res.json().catch(() => null);
-    if (!datos || datos.ok !== true) throw new Error("webhook_rechazo");
+    await confirmarWebhook(res);
     if (CONFIG.PIXEL_ID) fbq("track", "Lead");
     confettiDesde(document.getElementById("registro-card"));
     form.outerHTML =
@@ -620,5 +651,7 @@ form.addEventListener("submit", async (ev) => {
     msg.className = "err";
     btn.disabled = false;
     btn.textContent = "Reservar mi lugar";
+  } finally {
+    registroEnviando = false;
   }
 });
