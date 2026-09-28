@@ -602,6 +602,10 @@ form.addEventListener("submit", async (ev) => {
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
+    // Le webhook répond 200 même quand il refuse (plafond, données invalides) :
+    // seul « ok: true » veut dire que la ligne est écrite (audit M18, 28/09).
+    const datos = await res.json().catch(() => null);
+    if (!datos || datos.ok !== true) throw new Error("webhook_rechazo");
     if (CONFIG.PIXEL_ID) fbq("track", "Lead");
     confettiDesde(document.getElementById("registro-card"));
     form.outerHTML =
