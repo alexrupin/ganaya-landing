@@ -62,11 +62,6 @@ const REFERIDO = (() => {
     (location.protocol === "https:" ? "; Secure" : "");
   return saved.code;
 })();
-function linkRegistro() {
-  const url = new URL("https://app.gana-ya.com/registro");
-  if (REFERIDO) url.searchParams.set("ref", REFERIDO);
-  return url.href;
-}
 document.querySelectorAll('a[href]').forEach(a => {
   const url = new URL(a.href, location.href);
   if (REFERIDO && url.origin === "https://app.gana-ya.com" && ["/registro", "/login"].includes(url.pathname)) {
@@ -682,7 +677,7 @@ form.addEventListener("submit", async (ev) => {
     form.outerHTML =
       '<div class="exito"><span class="exito-check" aria-hidden="true">✓</span>' +
       '<p>¡Listo! Tu lugar está reservado.<br>Te avisaremos antes que nadie.</p>' +
-      '<p><a href="' + linkRegistro() + '">Crear mi cuenta en GanaYa</a></p>' +
+      // 29/09 : pas de lien de création de compte, l'accès passe par le paiement.
       montarComunaHTML() + "</div>";
     activarComuna(email);
   } catch (e) {
