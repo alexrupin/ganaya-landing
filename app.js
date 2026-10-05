@@ -218,7 +218,7 @@ const ccSelect = document.getElementById("cc");
 
 // ---------- Reveal au scroll ----------
 // Les cartes des grilles se révèlent en cascade (délai croissant).
-document.querySelectorAll(".grid-cats .cat, .grid-voto .opcion, .grid-como article")
+document.querySelectorAll(".grid-cats .cat, .grid-como article")
   .forEach((el) => {
     el.setAttribute("data-reveal", "");
     const i = Array.prototype.indexOf.call(el.parentElement.children, el);
@@ -261,8 +261,8 @@ new IntersectionObserver((entries) => {
   refreshSticky();
 }, { threshold: 0.15 }).observe(registro);
 
-// ---------- Vote premios ----------
-const votoMsg = document.getElementById("voto-msg");
+// ---------- Envois au webhook ----------
+// Le vote des premios a été retiré le 05/10 (décision d'Alexandre) : il ne reste que l'inscription.
 
 // Apps Script renvoie aussi ses refus avec HTTP 200. Seul ok:true confirme le POST.
 async function confirmarWebhook(res) {
@@ -275,87 +275,6 @@ async function confirmarWebhook(res) {
 function mensajeError(e) {
   return e && e.message === "captcha" ? NO_VERIFICADO : ERROR_ENVIO;
 }
-
-const tsVoto = turnstileEn("ts-voto", "voto");
-// Vote et idée partagent un widget : un envoi à la fois, le suivant attend la fin du précédent
-// (son jeton neuf compris) au lieu d'attendre un jeton pendant que l'autre envoi tourne.
-let colaVoto = Promise.resolve();
-function enviarVoto(payload) {
-  const envio = colaVoto.then(() => enviarVotoAhora(payload));
-  colaVoto = envio.catch(() => {});
-  return envio;
-}
-function enviarVotoAhora(payload) {
-  if (!CONFIG.WEBHOOK_URL) return Promise.reject(new Error("no webhook"));
-  if (tsVoto.pendiente()) votoMsg.textContent = VERIFICANDO;
-  return tsVoto.jeton().then((turnstile) => fetch(CONFIG.WEBHOOK_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(Object.assign({
-      tipo: "voto",
-      source: new URLSearchParams(location.search).get("utm_source") || "",
-      ua: navigator.userAgent.slice(0, 120),
-    }, conJeton(turnstile), payload)),
-  })).then(confirmarWebhook).finally(() => tsVoto.renovar());
-}
-
-document.querySelectorAll(".opcion").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    if (localStorage.getItem("ganaya_voto")) {
-      votoMsg.textContent = "Ya registramos tu voto. ¡Gracias!";
-      return;
-    }
-    document.querySelectorAll(".opcion").forEach((b) => { b.disabled = true; });
-    btn.classList.add("elegida");
-    enviarVoto({ premio: btn.dataset.premio })
-      .then(() => {
-        localStorage.setItem("ganaya_voto", btn.dataset.premio);
-        confettiDesde(btn);
-        votoMsg.textContent = "¡Voto registrado! Regístrate abajo para no perderte el concurso del premio más votado.";
-      })
-      .catch((e) => {
-        document.querySelectorAll(".opcion").forEach((b) => { b.disabled = false; });
-        btn.classList.remove("elegida");
-        votoMsg.textContent = mensajeError(e);
-        votoMsg.style.color = "#C0392B";
-      });
-  });
-});
-
-// ---------- Tilt 3D sur les cartes de vote (desktop, souris) ----------
-document.querySelectorAll(".opcion").forEach((btn) => {
-  btn.addEventListener("pointermove", (e) => {
-    if (REDUCED || e.pointerType !== "mouse" || btn.disabled) return;
-    const r = btn.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width - 0.5;
-    const py = (e.clientY - r.top) / r.height - 0.5;
-    btn.style.transform =
-      `translateY(-5px) perspective(700px) rotateX(${-py * 8}deg) rotateY(${px * 8}deg)`;
-    btn.style.boxShadow = "0 18px 40px rgba(0,0,0,0.45)";
-  });
-  btn.addEventListener("pointerleave", () => {
-    btn.style.transform = "";
-    btn.style.boxShadow = "";
-  });
-});
-
-const btnIdea = document.getElementById("btn-idea");
-btnIdea.addEventListener("click", () => {
-  const idea = document.getElementById("otra-idea").value.trim();
-  if (!idea || btnIdea.disabled) return;
-  // Un seul envoi à la fois : deux clics rapides partageraient le même jeton à usage unique.
-  btnIdea.disabled = true;
-  enviarVoto({ premio: "(otra idea)", otra_idea: idea })
-    .then(() => {
-      document.getElementById("otra-idea").value = "";
-      votoMsg.textContent = "¡Gracias por tu idea! Nuestro equipo la revisará.";
-    })
-    .catch((e) => {
-      votoMsg.textContent = mensajeError(e);
-      votoMsg.style.color = "#C0392B";
-    })
-    .finally(() => { btnIdea.disabled = false; });
-});
 
 // ---------- Formulaire ----------
 const form = document.getElementById("form-registro");

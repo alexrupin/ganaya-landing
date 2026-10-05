@@ -18,16 +18,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20261005">
   <script src="/turnstile.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=20261005" defer></script>
 </head>
 <body class="noche">
 
   <!-- 1. Hero -->
   <header class="hero" id="hero">
     <img class="flotante flotante-izq" src="assets/brand/premio-phone.webp" alt="" aria-hidden="true" loading="lazy">
-    <img class="flotante flotante-der" src="assets/brand/premio-viaje.webp" alt="" aria-hidden="true" loading="lazy">
+    <img class="flotante flotante-der" src="assets/brand/premio-airpods.webp" alt="" aria-hidden="true" loading="lazy">
     <div class="hero-inner">
       <img class="hero-logo" src="assets/logo-blanco.png" alt="GanaYa">
       <h1>Paga menos<br>por lo que <span class="ya">YA</span> gastas.</h1>
@@ -69,15 +69,12 @@
   <!-- 3. Premios aspiracionales -->
   <section data-reveal class="premios">
     <h2>Y además, concursos exclusivos para <span class="oro">socios</span></h2>
-    <div class="premios-escena" role="img" aria-label="Premios referenciales: camioneta 0 km, smartphone, moto y viajes">
+    <div class="premios-escena" role="img" aria-label="Premios referenciales: smartphone y audífonos">
       <span class="premios-glow" aria-hidden="true"></span>
       <img class="escena-phone" src="assets/brand/premio-phone.webp" alt="">
-      <img class="escena-viaje" src="assets/brand/premio-viaje.webp" alt="">
-      <img class="escena-auto" src="assets/brand/premio-auto.webp" alt="">
-      <img class="escena-moto" src="assets/brand/premio-moto.webp" alt="">
+      <img class="escena-airpods" src="assets/brand/premio-airpods.webp" alt="">
     </div>
-    <p>Camionetas, tecnología, motos, viajes… concursos promocionales exclusivos
-      para socios.</p>
+    <p>Concursos promocionales exclusivos para socios.</p>
     <p class="ref">Imágenes referenciales. Cada concurso promocional contará con sus
       bases legales públicas.</p>
   </section>
@@ -91,31 +88,6 @@
       <article><span class="num">3</span><h3>Accede a concursos promocionales exclusivos</h3></article>
       <article><span class="num">4</span><h3>Podrás ser seleccionado para vivir experiencias increíbles</h3></article>
     </div>
-  </section>
-
-  <!-- 5. Vote premios -->
-  <section data-reveal class="voto" id="voto">
-    <h2>Tú eliges los <span class="ya">próximos premios</span></h2>
-    <p class="lead">¿Qué premio te gustaría ver en el próximo concurso promocional de
-      GanaYa? Vota:</p>
-    <div class="ts-caja" id="ts-voto"></div>
-    <div class="grid-voto" id="grid-voto">
-      <button class="opcion" data-premio="iPhone última generación"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-phone.webp" alt="" loading="lazy"><span class="opcion-label">iPhone última generación</span></button>
-      <button class="opcion" data-premio="Auto 0 km"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-auto.webp" alt="" loading="lazy"><span class="opcion-label">Auto 0 km</span></button>
-      <button class="opcion" data-premio="Viaje para dos"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-viaje.webp" alt="" loading="lazy"><span class="opcion-label">Viaje para dos</span></button>
-      <button class="opcion" data-premio="Moto"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-moto.webp" alt="" loading="lazy"><span class="opcion-label">Moto</span></button>
-      <button class="opcion" data-premio="Año de bencina"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-bencina.webp" alt="" loading="lazy"><span class="opcion-label">Un año de bencina</span></button>
-      <button class="opcion" data-premio="Experiencia gastronómica"><span class="halo" aria-hidden="true"></span><span class="check" aria-hidden="true">✓</span><img class="opcion-img" src="assets/brand/premio-gastronomia.webp" alt="" loading="lazy"><span class="opcion-label">Experiencia gastronómica</span></button>
-    </div>
-    <div class="otra-idea" id="otra-idea-box">
-      <label for="otra-idea">¿Otra idea? Cuéntanos (solo la ve nuestro equipo)</label>
-      <div class="fila-idea">
-        <input id="otra-idea" type="text" maxlength="80" placeholder="Tu idea de premio">
-        <button class="cta cta-mini" id="btn-idea" type="button">Enviar</button>
-      </div>
-    </div>
-    <p id="voto-msg" role="status"></p>
-    <p class="ref">Los premios de GanaYa son siempre productos y experiencias.</p>
   </section>
 
   <!-- 6. Transparencia -->
