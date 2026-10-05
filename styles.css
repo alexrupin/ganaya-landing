@@ -290,8 +290,9 @@ body.noche h2 { color: var(--noche-texto); }
 }
 .premios-escena img { position: absolute; pointer-events: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.45)); }
 /* 05/10 : seulement les lots du premier concours (avis de BBSC), plus d'auto, de moto ni de voyage. */
-.escena-phone { left: 0; bottom: -6%; width: 60%; max-width: 420px; z-index: 2; animation: flotaIzq 7s ease-in-out 0.5s infinite; }
-.escena-airpods { left: 46%; bottom: 0; width: 40%; max-width: 280px; z-index: 3; animation: flotaDer 8s ease-in-out 0.8s infinite; }
+/* 05/10 : les deux lots en cadeaux ouverts, une seule image. Ombre de contact dans l'image : pas de
+   drop-shadow (rectangle gris sur iOS Safari). */
+.premios-escena .escena-regalos { left: 0; right: 0; bottom: 0; width: 100%; max-width: 560px; height: 100%; margin: 0 auto; object-fit: contain; object-position: center bottom; filter: none; z-index: 2; }
 
 /* ---------- Cómo funciona ---------- */
 .noche .como { background: var(--noche-panel); text-align: center; }
