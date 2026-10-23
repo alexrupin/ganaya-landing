@@ -5,19 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GanaYa</title>
   <meta name="robots" content="noindex">
-  <!-- gana-ya.com/ig : dirección corta del link en bio de Instagram
-       (@ganayalatam). Redirige a la portada con utm_source=instagram para que
-       cada inscrito llegue marcado en la columna "source" del Sheet fundadora
-       y se pueda distinguir orgánico (instagram) de ads (meta). Decisión del
-       30/08/2026. Si algún día se agregan parámetros al link, se conservan. -->
+  <!-- gana-ya.com/ig, link en bio de Instagram (@ganayalatam), el día del lanzamiento de socios
+       (conception du 29/09, § 3.4). Lleva a la página de venta de la app (/unete : la raíz manda a un visitante al login desde el 05/10) con
+       utm_source=instagram y utm_campaign=bio, agregados solo si faltan: nunca pisa una marca
+       que ya viene en el link. Conserva los demás parámetros y el ancla.
+       Preparada en landing/lanzamiento/, no publicada: ver ../LEEME.md. -->
   <script>
     (function () {
-      var q = window.location.search || '';
-      q += (q ? '&' : '?') + 'utm_source=instagram&utm_campaign=bio';
-      window.location.replace('https://gana-ya.com/' + q);
+      var l = window.location;
+      var q = l.search || '';
+      // Les clés se lisent comme le navigateur (URLSearchParams) ; q reste tel quel pour garder
+      // les paramètres d'origine.
+      var p = new URLSearchParams(q);
+      if (!p.has('utm_source')) q += (q ? '&' : '?') + 'utm_source=instagram';
+      if (!p.has('utm_campaign')) q += (q ? '&' : '?') + 'utm_campaign=bio';
+      l.replace('https://app.gana-ya.com/unete' + q + (l.hash || ''));
     })();
   </script>
-  <meta http-equiv="refresh" content="0; url=https://gana-ya.com/?utm_source=instagram&utm_campaign=bio">
+  <meta http-equiv="refresh" content="0; url=https://app.gana-ya.com/unete?utm_source=instagram&utm_campaign=bio">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
   <style>
     body { font-family: 'Montserrat', -apple-system, 'Helvetica Neue', Arial, sans-serif; background: #13243B; color: #fff;
@@ -26,6 +31,6 @@
   </style>
 </head>
 <body>
-  <p>Te llevamos a GanaYa. Si no pasa nada, <a href="https://gana-ya.com/?utm_source=instagram&utm_campaign=bio">toca aquí</a>.</p>
+  <p>Te llevamos a GanaYa. Si no pasa nada, <a href="https://app.gana-ya.com/unete?utm_source=instagram&utm_campaign=bio">toca aquí</a>.</p>
 </body>
 </html>
